@@ -2,7 +2,7 @@
 
 > **What this document is:** A standing reference brief for planning, generating, and evaluating LinkedIn content for this profile. Paste this in as context whenever drafting a post, brainstorming ideas, or searching for things to post about. It covers who to write for, what to write about, what currently performs on LinkedIn, and what to avoid.
 >
-> **Last updated:** July 2026 — repeatedly refined from an initial resume-driven draft: Section 5 opened from a fixed 4-pillar list into an expandable Core Domain + lanes model; Section 4's voice defaults shifted toward flat technical writing over founder narrative; opinion made optional rather than assumed on every post; and critique, when it does appear, aimed at patterns and tradeoffs rather than named people or companies. LinkedIn's algorithm and format preferences shift every few months too, so revisit Sections 6–8 periodically, keep Section 1 current as SuperOS.dev evolves, and add new lanes to Section 5 as material or opinions emerge.
+> **Last updated:** July 2026 — repeatedly refined from an initial resume-driven draft: Section 5 opened from a fixed 4-pillar list into an expandable Core Domain + lanes model; Section 4's voice defaults shifted toward flat technical writing over founder narrative; opinion made optional rather than assumed on every post; and critique, when it does appear, aimed at patterns and tradeoffs rather than named people or companies. Most recently, a review of an outside LinkedIn post-template pack surfaced a few gaps and one real drift risk: Section 4 now closes the loophole where "personal experience as evidence" or "admitting fault" could slide into generic founder-narrative territory, and adds a rule for pairing engineering decisions with reader payoff; Section 6 adds native embeds as the sanctioned alternative to outbound links; Section 7 adds two reusable body-structure devices (contrast, arrow-chain reasoning); and Section 11 adds a bias-to-publish note. This pass also added short before/after examples to the rules in Sections 4 and 7 that didn't already have one — no rules changed, just made concrete. LinkedIn's algorithm and format preferences shift every few months too, so revisit Sections 6–8 periodically, keep Section 1 current as SuperOS.dev evolves, and add new lanes to Section 5 as material or opinions emerge.
 
 ---
 
@@ -50,14 +50,15 @@ Use these as the source of truth for any credibility claims, numbers, or career 
 
 ## 4. Voice & Tone
 
-- Specific over generic — real numbers, real systems, real decisions. Never vague claims.
+- Specific over generic — real numbers, real systems, real decisions. Never vague claims. Not "we scaled significantly," but "~1.6B events/day."
 - Direct, plain language. No corporate buzzwords ("passionate," "innovative thought leader," "disruptor," "guru," "synergy," etc.)
-- Confident, not salesy — an engineer/founder's voice, not a marketer's
-- Default opening is the technical claim, problem, or system behavior — not "I." Lead with the argument; save the personal frame for when it's genuinely the point.
-- First person still shows up constantly, but as support for an argument, not as narration — stating a judgment ("I'd pick X over Y here"), owning a call, or citing something seen firsthand. Personal experience (SuperOS.dev, Tesla, Google) is evidence pulled in when it's the sharpest available proof — not the shape the post is built around.
-- Opinion or critique isn't mandatory on every post. Plenty of good posts are just a genuine, specific reaction — an interesting fact, real curiosity about how something plays out — with no forced technical take attached. Don't manufacture an angle where the news doesn't need one.
-- Critique the pattern, not the people, on the posts where there is a real opinion. Don't imply that a specific named person or company missed, overlooked, or got something wrong unless it's something you can actually back up. A genuine point about a tradeoff or a hard problem stands on its own without needing to cast someone else's work as lacking.
-- Admitting what you'd do differently reads as credible, not weak — use it
+- Confident, not salesy — an engineer/founder's voice, not a marketer's. The same logic applies to calls to action: a strong brand earns interest, a strong CTA demands it — write the kind of post people want to engage with, not one that asks them to. Not "drop a 🔥 if you agree," but a post specific enough that people want to add their own experience in the comments.
+- Default opening is the technical claim, problem, or system behavior — not "I." Lead with the argument; save the personal frame for when it's genuinely the point. Not "I've been thinking about RAG a lot lately," but "Most RAG failures in production trace back to one thing: nobody evaluated retrieval quality on its own."
+- First person still shows up constantly, but as support for an argument, not as narration — stating a judgment ("I'd pick X over Y here"), owning a call, or citing something seen firsthand. Personal experience (SuperOS.dev, Tesla, Google) is evidence pulled in when it's the sharpest available proof — not the shape the post is built around. When it's used, say why it worked or failed, not just that it happened: "we hit 1.6B events/day because we moved to log-based CDC" is evidence; "I led a CDC platform at Tesla" alone is a credential, not an argument.
+- Opinion or critique isn't mandatory on every post. Plenty of good posts are just a genuine, specific reaction — an interesting fact, real curiosity about how something plays out — with no forced technical take attached. Don't manufacture an angle where the news doesn't need one. "Anthropic just open-sourced their MCP eval harness — didn't expect that this soon, curious how it changes tool-calling benchmarks" is a complete post on its own, no hot take required.
+- Critique the pattern, not the people, on the posts where there is a real opinion. Don't imply that a specific named person or company missed, overlooked, or got something wrong unless it's something you can actually back up. A genuine point about a tradeoff or a hard problem stands on its own without needing to cast someone else's work as lacking. Not "[Company]'s agent framework got orchestration wrong," but "most agent frameworks still treat retries as an afterthought, and it shows in production fast."
+- Admitting what you'd do differently reads as credible, not weak — use it. Anchor it to a specific decision or system, not a general story of struggle — a mistake in the retry logic, not "building a startup is hard." The same rule about leading with the claim, not "I," applies to admitting fault as much as to claiming a win.
+- Pair the decision with the payoff: a post can spend nearly all of its length on the engineering decision or tradeoff and still close the loop, in a line, on what it meant in practice — fewer on-call pages, a workflow that used to take a day, a query that used to time out. Matters most in the SuperOS.dev lane, since audience #3 (ops/RevOps/BizOps) reads for outcomes, not architecture for its own sake.
 - Stay on one thread per post — don't drag in unrelated personal context (a Tesla aside in a post about SuperOS.dev, or vice versa) unless it's directly necessary to make the point. One post, one topic.
 
 ## 5. Core Domain & Content Lanes
@@ -82,7 +83,7 @@ Not narrated as "at Tesla, we..." every time — credibility through depth, not 
 - Cloud architecture tradeoffs across AWS, GCP, and Pivotal
 
 **Lane — Building SuperOS.dev (Engineering Decisions & Product)**
-Real, current material, written as engineering decisions with tradeoffs — not chapters in a founder journey.
+Real, current material, written as engineering decisions with tradeoffs — not chapters in a founder journey. Each decision should still land somewhere real for the reader (Section 4: pair the decision with the payoff) — this lane doubles as the design-partner and customer pitch, and audience #3 is reading for outcomes.
 - The AutoCRUD → SuperOS.dev pivot as an architecture/product case study: why "Tables" (the no-code spreadsheet database) became the data layer, and what the shift toward agent-based workflow automation actually required
 - Building a Model Context Protocol (MCP) bridge to connect enterprise data/tools into LLM workflows — what it unlocks, what's hard about it
 - Why a pluggable multi-model layer (OpenAI, Anthropic, Gemini) instead of betting on one provider
@@ -114,6 +115,7 @@ Whatever clears the fit-check in Section 12 and doesn't belong in any lane above
 - Document/carousel posts, 8–12 slides — currently the highest-engagement format. Keep slide count tight; low completion rates hurt distribution.
 - Native video, uploaded directly (never linked from YouTube)
 - Text posts with a strong hook in the first 2–3 lines, backed by specific numbers or a real story
+- Native embeds — an uploaded PDF/doc, not a link — for anything you'd otherwise send people off-platform for: a one-pager, a demo recording, a diagram. Same proof as a link, without the reach penalty below.
 - A genuine question at the end, when it fits naturally
 
 **Actively suppressed — avoid:**
@@ -128,6 +130,8 @@ Whatever clears the fit-check in Section 12 and doesn't belong in any lane above
 - Open with a hook that works in the first 2–3 lines — that's all most readers see before "see more"
 - Default to leading with the technical claim, problem, or system behavior — not a personal opener. Bring in the personal frame only when it's genuinely the point.
 - Use specific numbers, systems, and decisions instead of generic advice
+- Reach for a contrast structure when the post allows it — what people assume vs. what's actually true, or, for infra-pattern posts specifically, stop-doing-X / start-doing-Y. The single most reliable body shape for scannable, opinionated technical writing, with or without a personal story attached. E.g.: "What people assume RAG needs: more context. What it needs in production: retrieval evals nobody ran." Or: "Stop polling for change data. Start reading the log."
+- In list-based posts, follow a claim with its one-line reason rather than leaving it bare (→ format) — the difference between a list of assertions and a list of arguments. E.g.: "Guardrails aren't optional → one bad tool call in production teaches you why fast," not just "Guardrails aren't optional."
 - Reply to every comment fast, especially within the first hour
 - Spend real time commenting thoughtfully on other people's posts — Angel Squad members, Hustle Fund GPs, respected AI infra engineers, and people building in the MCP/agent-tooling space. Often a faster lever than original posting.
 - Stay within the Core Domain in Section 5 — the lanes underneath it can and should expand
@@ -177,6 +181,7 @@ Always up for a conversation with engineers, founders, operators, or investors w
 - Meaningful engagement typically doesn't show up until roughly week 4–6 of consistent, quality posting — normal, not a sign the strategy isn't working
 - Platform-wide organic reach is down significantly year-over-year for everyone as of 2026 — slow early traction is the current baseline
 - Fewer than 2% of LinkedIn members post weekly — consistency alone is a differentiator
+- Bias toward publishing a specific, good-enough post over holding out for a perfect one — the material in Section 5 is deep enough that "good and shipped" reliably beats "flawless and still in drafts." Same lever as the point above: consistency compounds, waiting doesn't.
 
 ## 12. Quick-Use Instructions (for drafting a specific post)
 
@@ -188,12 +193,13 @@ When generating a LinkedIn post idea or draft from this brief:
 2. Default to the flat technical explainer/opinion shape — no personal anecdote required. Pull a specific number, decision, or story from Section 1 only when personal experience is genuinely the sharpest available evidence for the point — never to manufacture relatability, and never invented.
 3. Keep the post anchored to that single lane/topic. Don't drag in unrelated personal context from a different lane (a Tesla story in a SuperOS.dev post, or vice versa) unless it's genuinely necessary to the point — cut it if it's just there to sound more personal or credible.
 4. Draft a 2–3 line hook that works standalone — leading with the claim or system, not "I."
-5. Match the voice in Section 4.
-6. Recommend carousel format for technical/step-based content, native video for a quick take, plain text for opinions/stories.
-7. End with a genuine question or a light, non-pushy CTA — never a hard sales pitch.
-8. No outbound links in the post body, no polls, no engagement-bait phrasing.
-9. Check the draft against Sections 6–7 before finalizing.
+5. Pick a body shape from Section 7 — contrast, arrow-chain reasoning, or a plain claim-first list — rather than defaulting to paragraphs.
+6. Match the voice in Section 4.
+7. Recommend carousel format for technical/step-based content, native video for a quick take, plain text for opinions/stories.
+8. End with a genuine question or a light, non-pushy CTA — never a hard sales pitch.
+9. No outbound links in the post body, no polls, no engagement-bait phrasing.
+10. Check the draft against Sections 6–7 before finalizing.
 
 ---
 
-*Reflects LinkedIn platform/algorithm research as of July 2026, updated with founder/product details from the July 2026 resume. Revisit periodically — format performance and algorithm behavior shift, and Section 1 should be kept current as SuperOS.dev evolves.*
+*Reflects LinkedIn platform/algorithm research as of July 2026, updated with founder/product details from the July 2026 resume, and refined against an outside LinkedIn template-pack review. Revisit periodically — format performance and algorithm behavior shift, and Section 1 should be kept current as SuperOS.dev evolves.*
