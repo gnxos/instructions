@@ -80,4 +80,35 @@ class Solution {
         return dp[nums.length - 1];
     }
 }
+
+Top-down to Bottom-up
+  Steps to convert top-down to bottom-up
+  1. start with completed top-down implementation
+  2. initialize an array dp that is sized according to your state variables. 
+  3. Set your base cases, same as the ones you are using in your top-down function
+  4. write a for-loop(s) that iterate over your state varibles. If you ahve multiple state variables, you will need nested for-loops. These loops should start iterating from the base cases.
+  5. Now iterate of the inner most loop represents a given state and is equivalent to a function call to the same state in top-down.
+  6. We're done !!
+
+Multidimensional DP
+  The dimensions of a DP algorithm refer to the number of state variables used to define each state. The Framework works regardless of the number of dimensions
+  The common things to look out for in DP pronlems that required a state variable:
+    -  An index along some input
+    - A second index along some input
+    - Explict numerical constraints given in the problem
+    - variables that describe statuses in a given state
+    - Some sort of data like a tuple or bitmask used to indicate things being "visited" or "used".
+
+
+
+
+
+
+
+
+
+
+
+
+
         
