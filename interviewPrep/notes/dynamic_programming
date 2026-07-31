@@ -1,0 +1,33 @@
+Dynamic Programming is a programming paradigm that can explore all possible solutions to a problem. 
+  Its capable of solving a wide variety of problems that often have
+    1. The problem can be broken down into "overlapping subproblems".
+    2. The problem has an "optimal substructure" - an optimal solution can be formed from optimal solutions to the overlapping subproblems of the original problem. 
+
+  The Fibonnacci sequence is a classic example of DP. nth Fibonacci number F(n) can be break it down to F(n-1) and F(n-2) [[smaller subproblems]], then adding the solutions of these subproblems F(n-1) + F(n-2) = F(n) [[optimal structure]]
+
+Important: 
+    Greedy problems have optimal structure, but not overlapping subproblems.
+    Divde and conquer algorithms break a problem into subproblems, but these subproblems are not overlapping
+
+Bottom-up DP [Tabulation]  - iteration
+Top-down DP [memoization]  - recursion
+
+  Which is better ?
+    Any Dp can be implemented with either method, and there are reasons for choosing either over the other. 
+      - A bottom-up implementations runtime is usually faster, as iteration does not have the overhead that recursion does.
+      - A top-down implementation is usually much easier to write. this is because with recursion, the ordering of subprobems doesnt matter, whereas with tabulation, we need to go through a logical ordering of solving subproblems.
+  
+  When to use DP ?
+    some common characteristics of DP problems that are easy to identify (Not all DP problems follow this format and not all problems that follow these formats should be solved using DP)
+1. The problem will ask for the optimum values (maximum or minimum) of something, or the number of wayds there are to do something. for example 
+        - what is the minimum cost of doing ...
+        - waht is the maximum profit from ...
+        - How many ways are there to do ...
+        - what is the longest possible ...
+        - Is it possible to reach a certain point ... 
+2. Future "decisions" depend on earlier decisions. Deciding to do something at one step may affect the ability to do somehting in a later step.
+    This characteristic is what makes a greedy algorithm invalid for a DP problem.
+
+
+
+        
