@@ -9,8 +9,8 @@ Important:
     Greedy problems have optimal structure, but not overlapping subproblems.
     Divde and conquer algorithms break a problem into subproblems, but these subproblems are not overlapping
 
-Bottom-up DP [Tabulation]  - iteration
-Top-down DP [memoization]  - recursion
+Bottom-up DP [Tabulation]  - iteration with nested for loops and an array
+Top-down DP [memoization]  - recursion and hashmap
 
   Which is better ?
     Any Dp can be implemented with either method, and there are reasons for choosing either over the other. 
@@ -28,6 +28,15 @@ Top-down DP [memoization]  - recursion
 2. Future "decisions" depend on earlier decisions. Deciding to do something at one step may affect the ability to do somehting in a later step.
     This characteristic is what makes a greedy algorithm invalid for a DP problem.
 
-
+Framework for DP problems
+  Before we start, we need to first define a term: "state". In a DP problem, a state is a set of variables that can sufficiently describle a scenario. These variables are called "state variables", and we only care about relevant ones.
+1. A function or data structure that will compute/ contain the answer to the problem for every given state. 
+2. A recurrence relation to transition between states.
+3. Base cases, so that our recurrence relation doesn't go on infinitely.
+      example : 
+        1. For Climbing Stairs, let's say we have an function dp where dp(i) returns the number of ways to climb to the i th step. Solving the original problem would be as easy as return dp(n).
+        2. The problem states that we are allowed to take either 1 or 2 steps at a time. Logically, that means to climb to the 30th stair, we arrived from either the 28th or 29th stair. Therefore, the number of ways we can climb to the 30th stair is equal to the number of ways we can climb to the 28th stair plus the number of ways we can climb to the 29th stair.
+        3. The equation dp(i) = dp(i - 1) + dp(i - 2) on its own will continue forever to negative infinity. We need base cases so that the function will eventually return an actual number.
+To Summarize : With DP problems, we can use logical thinking to find the answer to the original problem for certain inputs, in this case we reason that there is 1 way to climb to the first stair and 2 ways to climb to the second stair. We can then use a recurrence relation to find the answer to the original problem for any state, in this case for any stair number. Finding the recurrence relation involves thinking about how moving from one state to another changes the answer to the problem.
 
         
