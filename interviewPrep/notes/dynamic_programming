@@ -99,6 +99,10 @@ Multidimensional DP
     - variables that describe statuses in a given state
     - Some sort of data like a tuple or bitmask used to indicate things being "visited" or "used".
 
+Time and Space Complexity
+  - In DP we never repeat calculations, whether by tabulation or memoization, we only compute state once. So, the time complexity is directly tied to the number of possible states.
+  - If computing each state required F time, and there are n possible states, then the time complexity of a DP algorithm is O(n. F)
+  - When we compute state we also store it. so the space complexity is equal to the number of states.
 
 
 
