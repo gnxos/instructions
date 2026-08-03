@@ -109,8 +109,9 @@ Iteration in the recurrence relation
   What if we could take upto k steps at a time ? we need to iteration in our recurrence relation
   The recurrence relation would be dynamic dp(i) = min(dp(j) + cost[j]) for all (i-k)<=j<=i
 
-
-
+State Transition by Inaction
+  Here "Doing Nothing" refers to two different states having the same value, because often the way we arrive at a new state with the same value as the previous state is by "Doing Nothing". 
+  If we are trying to maximize or minimize a score for example, sometimes the best option is to "do nothing", which leads to two states having the same value. The actual recurrence relation would look something like dp(i, j) = max(dp(i - 1, j), ...).
 
 
 
