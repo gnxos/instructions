@@ -104,8 +104,10 @@ Time and Space Complexity
   - If computing each state required F time, and there are n possible states, then the time complexity of a DP algorithm is O(n. F)
   - When we compute state we also store it. so the space complexity is equal to the number of states.
 
-
-
+Iteration in the recurrence relation
+  The recurrence relation for a static equation is dp(i) = min(dp(i-1)+cost[i-1], dp(i-2)+cost[i-2])
+  What if we could take upto k steps at a time ? we need to iteration in our recurrence relation
+  The recurrence relation would be dynamic dp(i) = min(dp(j) + cost[j]) for all (i-k)<=j<=i
 
 
 
