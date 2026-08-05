@@ -1,3 +1,4 @@
+1*
 Scalability : [https://systemcraft.in/concepts/scalability/]
   Ability of a system to handle increased load by adding resources, without fundamental changes to the architecture. A scalable system maintains performance (latency, throughput) as demand grows. 
   Vertical Scaling vs Horizontal Scaling 
@@ -104,6 +105,7 @@ Q4. When is vertical scaling the right choice ?
     For batch processing jobs that benifit from more RAM/ CPU on a single node.
     For systems where the engineering cost of horizontal scaling exceeds the hardware cost of a bigger machine
 
+2*
 Load Balancing : [https://systemcraft.in/concepts/load-balancing/]
     A load balancer distributes incoming requests across multiple servers so no single server gets overwhelmed
     - High availability, Scalibility, Performace, Maintenance
@@ -179,6 +181,7 @@ Q4. Can the load balancer become a bottleneck ?
     Envoy           L7, sidecar          Service mesh (istio)
     Cloudflare      L7, edge             CDN + LB + DDoS (distributed denial of service) protection
 
+3*
 CDN - content delivery network : [https://systemcraft.in/concepts/cdn/]
   A CDN is a network of servers distributed worldwide (edge servers) that cache and serve content from the location nearest to the user.
   How it works :
