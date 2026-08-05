@@ -269,8 +269,21 @@ Q4. CDN vs Read Replica ?
 
 4* Proxy :
     A proxy is an intermediary server that sits between a client and a destination server, forwarding requests on behalf of one side. It can modify, filter, cache, or log traffic passing through it.
+    
+    - Forward Proxy (Client side)
+        A forward proxy sits in front of clients and forwards their requests to the internet. The destination server sees the proxy IP, not the clients
+                Use Case               How
+            Corporate filtering      Block access to certain websites
+            Anonymity                Hide client IP from destination 
+            Caching                  Cache frequently accessed content (reduce bandwidth)
+            Access control           Require authentication before internet access
+            Geo-bypass               Access content restricted to other regions (VPN)
+            Logging                  Monitor all outbound traffic from an organization
+    Example: Squid proxy, corporate firewalls, VPN services, Tor network
 
-
+    - Reverse Proxy (Server side)
+        
+    
 
 
 
