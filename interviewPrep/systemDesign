@@ -76,8 +76,110 @@ Scalability : [https://systemcraft.in/concepts/scalability/]
         - Scaling out stateful services without extracting state first
         - Not setting auto scaling cooldown periods (leads to thrashing)
         - Ignoring the database bottlenect while scaling the app tier
-      
-                    
+
+Q1. How would you scale a system from 100 users to 10M users ?
+    Progressive approach: Each step is triggered by a specific bottleneck, not done preemptively
+      1. Start with a single server + DB 
+      2. Seperate app and DB to different machines 
+      3. Add a load balancer + multiple app servers
+      4. Add Redis cache to reduce DB load
+      5. Add read replicas for read heavy queries
+      6. CDN for static content
+      7. Shard the databases when write throughput is the bottleneck
+      8. Add message queues for async work
+      9. Multi region for global latency
+
+Q2. What's the difference between scaling out and scaling up for databases?
+    Scaling up (vertical) means a bigger DB machine - more RAM means more data fits in the buffer pool, faster CPUs handle more queries. Its simple but has limits and creates a single point of failure.
+    Scaling out (horizontal) means sharding - splitting data across multiple DB instances. Each shard handle a subset of the data. Its complex (nrrds shard keys, cross shard queries are expensive) but practically unlimited.
+
+Q3. How do you make a service stateless ?
+    Identify all server - local state: sessions, caches, file uploads, Websocket connections. 
+    Move sessions to Redis or use JWTs. 
+    Move caches to a shared Redis cluster.
+    For Websockets, use a pub-sub backplane (Redis pub/sub) so any server can push to any client.
+
+Q4. When is vertical scaling the right choice ?
+    For databases in the early to mid stage (sharding is complex and premature optimization)
+    For batch processing jobs that benifit from more RAM/ CPU on a single node.
+    For systems where the engineering cost of horizontal scaling exceeds the hardware cost of a bigger machine
+
+Load Balancing : [https://systemcraft.in/concepts/load-balancing/]
+    A load balancer distributes incoming requests across multiple servers so no single server gets overwhelmed
+    - High availability, Scalibility, Performace, Maintenance
+    - You can have LBs at every layer — external (user-facing), internal (service-to-service), and even DB-level (read replicas).
+    
+    Load Balancing Algorithms :
+      - Round Robin : rotate through servers in order
+      - Weighted Round Robin : same as round robin but stronger server gets more traffic. (when some servers has more CPU/ RAM)
+      - Least connections : send to server with fewest sctive connections right now
+      - Least Response Time : send to the server with the fastest recent response time + fewest connections (when latency matters more than pure load distribution)
+      - IP hash : Hash the clients IP to determine which server to use. (same client always hits the same server)
+      - Consistent hashing : Advanced version of IP hashing that minimizes disruption when servers are added/ removed. Only K/N keys needs to be remapped (K = Keys, N = Nodes). (Distributed caches, databases sharding)
+
+  Algorithm Comparison
+                            Even Distribution     Session Affinity    Adapts to load    complexity
+    Round Robin              Yes                    No                  No                Very Low
+    Weighted RR              Configurable           No                  No                Low
+    Least connections        Adaptive               No                  Yes               Medium
+    IP Hash                  Depends on IPs         Yes                 No                Low
+    Consistent Hashing       Good                   Yes                 No                Medium
+
+ L4 vs L7 Load Balancing 
+                          L4 (Transport)                  L7 (Applications)
+    Sees                  IP + Port + TCP/ UDP            Full HTTP: URL, headers, cookie, body
+    Decision based on     Source/ dest Ip and port        URL paths, headers, cookies, content
+    Speed                 Faster (less parsing)           Slower (inspects full request)
+    Features              Basic distribution              Path routing, header - based routing auth
+    SSL                   Passes through (or terminates)  Always terminates, can inspect
+    Example               AWS NLB, HAProxy TCP mode       AWS ALB, Ngnix, Envoy
+
+  In interviews, L7 is almost always what you want — you need path-based routing for microservices.
+
+  Health Check
+    Active : LB periodically pings each server (most common) 
+    Passive : LB monitors real traffic. If a server returns 5xx for N consecutive requests, mark it unhealthy
+  
+  Health check endpoints should verify 
+    - server process is running 
+    - can connect to database
+    - can connect to Redis
+    - Disk space is okay
+
+  Sticky sessions 
+  User logs into Server A and Next requet goes to Server B
+                                      How                                      Pros                                 Cons
+  External session store (Redis)      Store sessions in shared Redis           stateless servers, best approach     Extra infrastructure
+  Sticky sessions (cookie based)      LB routes same user to same server       Simple                               server death = lost sessions
+  JWT Tokens                          session data in the token itself         No server storage needed             cant revoke easily, token size
+
+  * Best practice: Store sessions in Redis. Servers are stateless. LB uses any algorithm without worrying about session affinity.
+
+  Load Balancing at scale 
+      Single LB is a single point of failure. Solutions:
+      Active-Passive: Two LBs. Primary handles all traffic. If it dies, passive takes over (via floating IP/DNS failover).
+      Active-Active: Both LBs handle traffic (DNS returns both IPs). If one dies, the other handles all.
+      DNS Load Balancing: Multiple LB IPs in DNS. Client picks one. Coarse-grained but simple.
+
+Q1. What load balancing algorithm would you use here ?
+    Least connections for most cases (adapts ti varying request times). Round t=robin if all requests are similar duraction. IP Hash or Consistent Hashing if you need session affinity or cache locality
+Q2. How do you handle a server going down ? 
+    Health checks every 10 seconds. After 2 - 3 consecutive failures, mark server as unhealthy and stop routing traffic to it. Alert the team. Auto - scaling replaces it.  
+Q3. Whats the difference between L4 and L7 ?
+    L4 routes based on IP/ port (fast, simple). L7 reads the full HTTP request adn routes based on URL path, headers, or cookies (flexible, needed for microservices)
+Q4. Can the load balancer become a bottleneck ?
+    Yes, if its a single instance. Solutions: DNS- based multi- LB, active pair, or scaling the LB horizontally (AWS ALB auto-scales).
+
+    Read World Tools 
+                    Type                 Best For
+    AWS ALB         L7, managed          Most web apps, microservices
+    AWS NLB         L4, managed          Ultra low latency, TCP/ UCP
+    Nginx           L7, self managed     Reverse proxy + LB combo
+    HA proxy        L4/ L7 self managed  High performance, fine control
+    Envoy           L7, sidecar          Service mesh (istio)
+    Cloudflare      L7, edge             CDN + LB + DDoS (distributed denial of service) protection
+
+
     
     
 
