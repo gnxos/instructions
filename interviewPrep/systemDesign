@@ -1,5 +1,4 @@
-1*
-Scalability : [https://systemcraft.in/concepts/scalability/]
+1* Scalability :
   Ability of a system to handle increased load by adding resources, without fundamental changes to the architecture. A scalable system maintains performance (latency, throughput) as demand grows. 
   Vertical Scaling vs Horizontal Scaling 
   - Bigger machine             - More machines
@@ -105,8 +104,7 @@ Q4. When is vertical scaling the right choice ?
     For batch processing jobs that benifit from more RAM/ CPU on a single node.
     For systems where the engineering cost of horizontal scaling exceeds the hardware cost of a bigger machine
 
-2*
-Load Balancing : [https://systemcraft.in/concepts/load-balancing/]
+2* Load Balancing :
     A load balancer distributes incoming requests across multiple servers so no single server gets overwhelmed
     - High availability, Scalibility, Performace, Maintenance
     - You can have LBs at every layer — external (user-facing), internal (service-to-service), and even DB-level (read replicas).
@@ -127,7 +125,7 @@ Load Balancing : [https://systemcraft.in/concepts/load-balancing/]
     IP Hash                  Depends on IPs         Yes                 No                Low
     Consistent Hashing       Good                   Yes                 No                Medium
 
- L4 vs L7 Load Balancing 
+   L4 vs L7 Load Balancing 
                           L4 (Transport)                  L7 (Applications)
     Sees                  IP + Port + TCP/ UDP            Full HTTP: URL, headers, cookie, body
     Decision based on     Source/ dest Ip and port        URL paths, headers, cookies, content
@@ -181,8 +179,7 @@ Q4. Can the load balancer become a bottleneck ?
     Envoy           L7, sidecar          Service mesh (istio)
     Cloudflare      L7, edge             CDN + LB + DDoS (distributed denial of service) protection
 
-3*
-CDN - content delivery network : [https://systemcraft.in/concepts/cdn/]
+3* CDN - content delivery network :
   A CDN is a network of servers distributed worldwide (edge servers) that cache and serve content from the location nearest to the user.
   How it works :
     First request (cache miss) : User -> CDN doesnt have -> Origin server -> CDN Edge caches the image locally -> Returns to the user (slow this one time).
@@ -270,6 +267,8 @@ Q4. CDN vs Read Replica ?
     CDN caches the final rendered content (bytes). Read Replica caches at the database level (queries). CDN eliminates the server entirely for cached requests.
     Use both: CDN for static content, replicas for dynamic database queries.
 
+4* Proxy :
+    A proxy is an intermediary server that sits between a client and a destination server, forwarding requests on behalf of one side. It can modify, filter, cache, or log traffic passing through it.
 
 
 
