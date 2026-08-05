@@ -179,13 +179,119 @@ Q4. Can the load balancer become a bottleneck ?
     Envoy           L7, sidecar          Service mesh (istio)
     Cloudflare      L7, edge             CDN + LB + DDoS (distributed denial of service) protection
 
+CDN - content delivery network : [https://systemcraft.in/concepts/cdn/]
+  A CDN is a network of servers distributed worldwide (edge servers) that cache and serve content from the location nearest to the user.
+  How it works :
+    First request (cache miss) : User -> CDN doesnt have -> Origin server -> CDN Edge caches the image locally -> Returns to the user (slow this one time).
+    Subsequent request (cache HIT) : user -> CDN Edge -> Returns to the user immediately (fast).
 
-    
-    
+  Pull CDN
+    CDN fetches content from origin only when first requested. If no one requests it, it's never cached at that edge.
+  Push CDN
+    Explicitly upload content to CDN edge servers. CDN serves it without ever contacting your origin.
+  Which to Use ?
+                                            Best Approach
+    Static assets (css, js, images)          Pull CDN
+    User - uploaded media (profile pics)     Pull CDN
+    Popular video content                    Push CDN
+    Live streaming                           Specialized CDN (not cached)
+    API responses                            Usually Not CDN (dynamic), unless cacheable
 
-  
-  
+  What to Cache on CDN :
+    Cache                                    Dont Cache
+    Static files (css, js, fonts)            User specific data (dashboard, settings)
+    Images, videos, pdfs                     Authentication tokens
+    Public API responses (product catalog)   Real - time data (stock prices, chat)
+    HTML pages (for anonymous users)         POST/ PUT/ DELETE responses
 
+  Cache Invalidation on CDN 
+    On content update, how to make the CDN serve the new version ?
+      Strategy 1. Versioned URLs (Best)
+          CDN caches indefinitely. New deployment = new URL. Old URL still works fro users with old HTML
+                  v1: /static/app.v1.js
+                  v2: /static/app.v2.js (new URL = CDN treats as new file = no stale cache)
+      Strategy 2. Cache - Control headers
+                  Cache-Control: public, max-age=86400  (cache for 24 hours)
+                  Cache-Control: no-cache  (always revalidate with origin)
+                  Cache-Control: no-store  (never cache)
+      Strategy 3. Purge API
+          Most CDNs offer an API to force-invalidate cached content. Trade-off: Purge takes time to propagate (seconds to minutes across all edges).
+                  POST /purge {"urls": ["https://example.com/image.png"]} → CDN removes from all edges → next request fetches fresh from origin
   
+  CDN Performance Numbers
+        Metric                              Without CDN        With CDN
+      Latency (US user, US server)          50ms                 10ms
+      Latency (India user, US server)       200ms                15ms (served from India edge)
+      Origin server load                    100% of requests     5 - 10 % (90%+ served by CDN)
+      Bandwidth cost                        High                 Lower (CDN absorbs most traffic)
+      Availability during origin outage     0%                   Partial (cached content still served)
+  
+  CDN Providers
+        Provider                  Best For                       Unique feature
+      Cloudflare                General web, DDoS protection    Free tier, Workers (edge compute)
+      AWS CloudFront            AWS ecosystem                   Tight S3 integration, Lambda@Edge
+      Fastly                    Real-time purging               Instant purge (< 150ms globally)
+      Akamai                    Enterprise, largest network     300k+ edge servers
+      Google Cloud CDN          GCP ecosystem                   Global anycast, load balancing
+
+  Edge computing (CDN + Logic)
+    Modern CDNs can run code at the edge (not just cache static files)
+        Traditional : User -> CDN (static only) -> Origin (all logic)
+        Edge computing : User -> CDN Edge (runs simple logic like auth, redirects, A/B testing) -> Origin (only for DB queries)
+    Examples :
+      Cloudflare workers
+      AWS Lambda@Edge / CloudFront Functions
+      Fastly Compute@Edge
+    Use Cases:
+      URL redirects at the edge (no origin hit)
+      A/B testing (decide variant at edge)
+      Auth token validation (reject unauthenticated requests before hitting origin)
+      Image resizing/ optimization at edge
+  
+  CDN in System Design interviews - When to mention CDN ?
+    - System servers static content (images, videos, css/js)
+    - Users are globally distributed
+    - Read - heavy workload with cacheable responses
+    - Need to reduce origin server load
+  Example :
+      “User-uploaded images are stored in S3. We put CloudFront in front of S3 so images are served from the nearest edge location. First request goes to origin, subsequent requests are served from cache with ~10ms latency. We use versioned URLs for cache busting.”
+
+Q1. How does a CDN reduce latency ?
+    Content is served from an edge server geographically close to the user (10-20ms) instead of travelling to the origin (100-300ms). Physics - speed of light through fiber has a floor.
+Q2. What if the origin goes down ?
+    CDN continues serving cached content. User see existing content but cant get new content. This is 'stale-while-error' better thana complete outage
+Q3. How do you handle personalized content with a CDN ?
+    Dont cache personalized content on CDN. Use CDN only for static/ public assets. Personalized API responses go directly to origin servers. 
+    Or use edge computing to assemble personlized pages from cached fragments.
+Q4. CDN vs Read Replica ?
+    CDN caches the final rendered content (bytes). Read Replica caches at the database level (queries). CDN eliminates the server entirely for cached requests.
+    Use both: CDN for static content, replicas for dynamic database queries.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   
   
