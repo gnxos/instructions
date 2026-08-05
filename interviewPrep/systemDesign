@@ -1,0 +1,89 @@
+Scalability : [https://systemcraft.in/concepts/scalability/]
+  Ability of a system to handle increased load by adding resources, without fundamental changes to the architecture. A scalable system maintains performance (latency, throughput) as demand grows. 
+  Vertical Scaling vs Horizontal Scaling 
+  - Bigger machine             - More machines
+  - More CPU, RAM, SSD         - Add server instances
+  - Limit : hardware max       - Limit : almost none
+  - Single point of failure    - Need load balancer and stateless design
+
+    Stateless Services : The foundation of horizontal scaling is statelessness - any instance can handle any request as no request specific state lives on the server 
+    - Session in Redis or encoded in JWT
+    - Files in S3 or object storage
+    - Shared cache (Redis cluster)
+    - Websocket with pub-sub backplane
+
+    Auto Scaling : adjust the number of instances based on metrics
+                              Scale Out Trigger              Scale In Trigger 
+        CPU utilization        > 70% for 3 min                < 30% for 10 min
+        Request count          > 1000 RPS per instance        < 200 RPS per instance
+        Queue depth            > 1000 messages pending        < 100 messages pending
+        Response time          p95 > 500ms                    p95 < 100ms
+
+    Cool down period : wait 5 - 10 min between scaling events to avoid thrashing
+    Min/ Max instances : set bounds (min=2 for redundancy, max=50 for cost)
+    Predictive scaling : Pre-scale before knowen traffic spikes (e.g Black Friday)
+
+    Scaling the Database : 
+      Single DB => Vertical Scale => Read Replicas => Cache Layer => Sharding => Multi-region
+                        Handles             Techinique
+    Single DB           < 1k QPS             one powerful machine
+    Vertical scale      1 - 5k QPS           Bigger machine (more RAM, faster SSD)
+    Read Replicas       10 - 50k read QPS    Route reads to replicas, write to primary
+    Cache layer         100k+ read QPS       Redis/ Memcached absorbs 90%+ of reads
+    Sharding            50k+ write QPS       Split data across multiple DB instances
+    Multi-region        Global scale         Replicate across regions for low latency
+
+    Real world Numbers (order of magnitude)
+                        Single Instance Capacity
+    Nhinx/ HAProxy       ~50k - 100k concurrent connections 
+    Application server   500 - 5k RPS (depends on work per request)
+    PostgreSQL           5k - 20k QPS (depends on query complexity)
+    MySQL                5k - 30k QPS
+    Redis                100k - 200k ops/sec (single thread)
+    Kafka                500k - 2M messages/sec per broker
+    Elasticsearch        1k - 10k queries/sec per node
+
+    Scaling the Cache
+                          When                         How
+    Single Redis          < 100k ops/sec                One instance handles everything
+    Redis cluster         100k - 1M+ ops/sec            Shard keys across multiple nodes
+    Multi layer cache     Mixed access patterns         L1 in process -> L2 Redis -> L3 CDN
+    Read replicas         Read heavy, geo distributed   Redis replicas in each region
+
+    Scaling Strategies
+                           Complexity     Cost               Best for
+    Vertical scaling       Low            high per unit     Quick fix, databases
+    Horizontal scaling     Medium         Linear            Stateless app tier
+    Caching                Low - Medium   Low               Read heavy worklaods
+    Read Replicas          Medium         Medium            Read heavy databases
+    Sharding               High           Medium            Write heavy databases
+    CDN                    Low            Low               static content, global users
+    Async processing       Medium         Low               Spiky workloads
+
+    When to use which 
+      Vertical scaling when 
+        - early stage, low traffic (<1k RPS)
+        - Database thats hard to shard
+        - Quick fix while planning horizontal approach
+        - Workload is CPU/ memory bound on a single process
+      Horizontal scaling when 
+        - Expecting growth beyond single machine limits
+        - Need high availability (no single point of failure)
+        - Workload is parallelizable
+        - Cost efficiency matters at scale
+      Common mistakes 
+        - Premature sharding before trying read replicas + caching
+        - Scaling out stateful services without extracting state first
+        - Not setting auto scaling cooldown periods (leads to thrashing)
+        - Ignoring the database bottlenect while scaling the app tier
+      
+                    
+    
+    
+
+  
+  
+
+  
+  
+  
