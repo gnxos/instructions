@@ -279,9 +279,64 @@ Q4. CDN vs Read Replica ?
             Access control           Require authentication before internet access
             Geo-bypass               Access content restricted to other regions (VPN)
             Logging                  Monitor all outbound traffic from an organization
-    Example: Squid proxy, corporate firewalls, VPN services, Tor network
+      Example: Squid proxy, corporate firewalls, VPN services, Tor network
 
     - Reverse Proxy (Server side)
+        A reverse proxy sits in front of servers and handles incoming requests from the internet. Clients see the proxy's address not the actual servers
+              Use Case                 How
+          Load balancing           Distribute requests across backend servers
+          SSL termination          Handle TLS encryption/ decryption at the proxy
+          Caching                  Cache static assets and API responses
+          Compression              GZip responses before sending to client
+          Security                 Hide backend topology, WAF, DDos protection
+          A/B testing              Route percentage of traffic to different backends
+          Canary deployments       Send 5% traffic to new version
+      Example: Nginx, HAProxy, cloudflare, AWS ALB, Apace httpd
+
+  Forward vs Reverse Proxy comparision
+      Aspect                 Forward Proxy                      Reverse Proxy
+    Works for                Client                              Server
+    Hides                    Client Identity                     Server Identity
+    Position                 Infront of clients                  Infront of servers
+    Who configures           Client or clients network admin     Server owner
+    Common Use               Corporate networks, VPN             Webservers, CDN, LB
+    Client awareness         Client knows its using a proxy      Client doesnt know (transparent)
+
+    - Transparent Proxy
+        A transperent proxy intercepts traffic without the clients knowledge or configuration. The client doesnt know a proxy exists.
+              Use cases
+          ISP caching (Intercepting HTTP to serve cached content)
+          Corporate content filtering without client configuration
+          CDN edge caching (Intercepting DNS to route to nearest PoP)
+          Government censorship (Intercepting and blocking specific domains)
+        Limitation: Doesnt work well with HTTPS (cant inspect encrypted traffic without MITM certificate)
+    
+    - Sidecar Proxy (Service Mesh)
+        A sidecar proxy runs alongside every service instance, handling all inbound and outbound network traffic transparently. The application communicates with localhost; the sidecar handles service discovery, TLS, retries, and observability.
+            Envoy proxy features:
+              L7 load balancing (HTTP/2, gRPC native)
+              Automatic retries with circuit breaking
+              mTLS between all services (zero-trust)
+              Distributed tracing headers propagation
+              Rate limiting (local and global)
+              Hot restarts (update config without dropping connections)
+        Used by: Istio (Envoy sidecar), Linkerd (linkerd-proxy), Consul connect (Envoy)
+
+    Nginx as Reverse Proxy - most popular reverse proxy for web application
+          Feature             Capability
+        Load balancing      
+        SSL/ TLS
+        Caching
+        Compression
+        Rate limiting
+        Health checks
+        Websocket
+        Throughput
+        
+    
+
+5* API Gateway
+    
         
     
 
