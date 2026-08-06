@@ -121,12 +121,48 @@ Q4. How does Netflix manage 700+ microservices ?
         Reprocessing	Easy (re-run the job)	                Hard (need to replay stream)
         State	        Stateless (read all, compute, write)	Stateful (maintain running state)
         Use case	    Analytics, reports, ML training	        Alerts, fraud, real-time dashboards
+    
+        Batch Processing Technologies
+            Technology	        Strength	                        Scale	                Use Case
+            Apache Spark	    In-memory compute, SQL support	    PB-scale	            ETL, ML training, analytics
+            Hadoop MapReduce	Reliable, disk-based	            PB-scale	            Legacy batch, large datasets
+            AWS Glue	        Serverless Spark	                TB-scale	            Managed ETL on AWS
+            dbt	                SQL-based transforms	            Depends on warehouse	Analytics engineering
+            Presto/Trino	    Interactive queries on data lake	TB-scale	            Ad-hoc analytics
+    
+        Stream Processing Technologies
+            Technology	                            Strength	                    Latency	    Use Case
+            Apache Flink	                        True streaming, exactly-once	ms	        Complex event processing, stateful streaming
+            Kafka Streams	                        Lightweight, embedded in app	ms	        Microservice-level stream processing
+            Apache Spark Structured Streaming	    Unified batch + stream API	    seconds	    Near-real-time analytics
+            AWS Kinesis Data Analytics	            Serverless Flink	            seconds	    Managed stream processing
+            Apache Storm    	                    Low-latency (legacy)	        ms	        Simple event routing
 
-    Batch Processing Technologies
-        Technology	        Strength	                        Scale	                Use Case
-        Apache Spark	    In-memory compute, SQL support	    PB-scale	            ETL, ML training, analytics
-        Hadoop MapReduce	Reliable, disk-based	            PB-scale	            Legacy batch, large datasets
-        AWS Glue	        Serverless Spark	                TB-scale	            Managed ETL on AWS
-        dbt	                SQL-based transforms	            Depends on warehouse	Analytics engineering
-        Presto/Trino	    Interactive queries on data lake	TB-scale	            Ad-hoc analytics
+    Lambda Architecture
+        Lambda architecture runs BOTH batch and stream in parallel to get the best of both worlds:
+        How it works:
+            - All data flows into both the speed layer (stream) and the data lake
+            - Speed layer provides real-time approximate results (last few hours)
+            - Batch layer periodically recomputes accurate results (last 24h+)
+            - Serving layer merges both views — recent data from stream, historical from batch
+        Problem: You maintain TWO codepaths (batch + stream) for the same logic. Bugs in one but not the other cause inconsistencies.
+Kappa Architecture
+    Kappa architecture simplifies by using ONLY the stream layer, with the ability to reprocess by replaying the stream:
+                Data Sources => Event Log - Kafka => Replay from offset 0 for reprocessing => Stream Processor v2 - new instance => New Serving DB => Swap when caught up => Serving DB => Query API
+    How it works:
+        - All data flows through a single event log (Kafka with long retention)
+        - Stream processor handles real-time processing
+        - For reprocessing: deploy a new processor version, replay from the beginning of the log
+        - When the new version catches up, swap it in as the primary
+    Advantage: Single codebase for all processing. No batch/stream code divergence. Limitation: Requires retaining the full event log (or at least the history you need to reprocess).
+        
+
+
+
+
+
+
+
+
+
 
