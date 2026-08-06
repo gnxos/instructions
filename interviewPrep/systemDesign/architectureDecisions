@@ -201,6 +201,26 @@ Q4. How does Netflix manage 700+ microservices ?
             - You want a single processing paradigm
             - Event sourcing is your data model
 
+Q1. When would you choose Flink over Kafka Streams ?
+    Kafka streams is a library embedded in your application, great for simple transformations, filtering, and light weight aggregations within a microservice.
+    Flink is a distributed processing cluster, better for complex event processing, large stae management (TB scale), multi source joins, and when you need exactly once gurantees across multiple sinks.
+    If the processing fits in a single microservice, Kafka Streams. If its a dedicated data pipeline with complex logic, Flink.
+
+Q2. How do you handle late arriving data in stream processing ?
+    Use event-time processing (not processing time). Each event carries a timestamp from when it was generated. 
+    Define a watermark - a threshold that says "I dont expect events older than X."
+    Late events (beyond the watermark) are either dropped, sent to a side output for manual reconciliation, or trigger an update to the already - emitted result.
+    Flink and Spark structured streaming both support watermarking natively.
+
+Q3. Why not just use stream processing for everything ?
+    Stream processing is more complex (state management, ordering, exactly-once), more expensive to operate (always running), and harder to debug. 
+    For use cases where latency of hours is fine (daily reports, ML model training), batch is simpler, cheaper, and easier to reason about. 
+    You also can’t efficiently join a stream with a 5TB historical dataset — that’s batch territory.
+
+Q4. How would you build a real-time leaderboard?
+    Events (game scores) flow into Kafka. A stream processor (Kafka Streams or Flink) maintains a stateful sorted set of top scores, updated in real-time as events arrive. 
+    The sorted set is materialized to Redis (Sorted Set with ZADD). The leaderboard API reads directly from Redis (ZREVRANGE for top N). 
+    For global leaderboards with millions of users, partition by score ranges and merge at query time.
 
 
 
