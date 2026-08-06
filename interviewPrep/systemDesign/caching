@@ -1,0 +1,66 @@
+1* Caching :
+    Caching is storing frequently accessed data in a faster storage layer so you dont hit the slower layer (database) everytiime
+            Where Caches Live (Cache Layers)
+      Browser Cache        Cache-Control - ETag - Last Modified            Latency 0ms
+      CDN Cache            Cloudflare - CloudFront - Fastly                Latency 5 - 20ms
+      Application Cache    HashMap -  Guava - Caffeine                     Latency less than 1ms
+      Distributed Cache    Redis - Memcached                               Latency 1 - 5ms
+      Database Cache       Query cache - Buffer pool                       Latency varies
+
+In HLD interviews, you’ll mostly discuss Layer 4 (Redis/Memcached).
+
+    Caching Strategies:
+      - Cache Aside (Lazy loading)
+          The application manages the cache explicitly. Cache is a seperate system.
+                      READ:
+                        1. Check cache → hit? Return data
+                        2. Miss? → Query database
+                        3. Store result in cache (with TTL)
+                        4. Return data
+                      
+                      WRITE:
+                        1. Write to database
+                        2. Invalidate (delete) the cache key
+                        (Next read will miss, fetch fresh data, re-cache)
+          Pros: Only caches data that's actually requested
+          Cons: First request is always slow (miss). Cache can become stale if DB is updated by another service
+      
+      - Write Through
+          Every write goes to Both cache and database synchronously
+                      WRITE:
+                        1. Write to cache
+                        2. Cache writes to database (synchronously)
+                        3. Return success
+                      
+                      READ:
+                        1. Always read from cache (it's always up-to-date)
+          Pros: Cache is never stale. Reads are always fast. 
+          Cons: Write latency increases (two writes). Cache stores data that might never be read.
+          When to use: When you can’t tolerate stale reads (financial data, user sessions).
+
+      - Write Behind (Write Back)
+          Write to cache immediately, flush to database asynchronously in batches.
+                        WRITE:
+                          1. Write to cache → return success immediately
+                          2. Background worker batches writes to database every N seconds
+                        
+                        READ:
+                          1. Always read from cache
+          Pros: Write latency is minimal (just cache write). Great for high-throughput writes. 
+          Cons: Data loss risk if cache crashes before flushing to DB. Complex.
+          When to use: High write throughput where slight data loss is acceptable (view counts, analytics events, session data).
+
+      - Read Through
+          Cache itself fetches from database on miss (application doesnt manage this).
+                          READ:
+                            1. Application calls cache.get(key)
+                            2. Cache checks → miss → cache itself queries DB
+                            3. Cache stores result and returns to application
+                          (Application never talks to DB directly for reads)
+          When to use: When using a caching library that supports it (e.g., Caffeine with a loader function).
+
+
+
+
+
+
