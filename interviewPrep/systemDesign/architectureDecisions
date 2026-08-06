@@ -1,0 +1,32 @@
+1* Micorservices vs Monolith
+    Microservices is an architectural style where an application is composed of small, independently deployable services, each owning its own data and communicating over the network. 
+    A monolith is a single deployable unit containing all functionality.
+
+        Monolith vs Microservices Comparison
+              Aspect	                 Monolith	                                Microservices
+            Deployment	            All or nothing	                          Independent per service
+            Scaling	                Scale entire app	                        Scale individual services
+            Team structure	        Single team or tightly coupled	          Independent teams per service
+            Data	                  Shared database	                          Database per service
+            Technology	            Single tech stack	                        Polyglot (each service picks best fit)
+            Consistency	            ACID transactions easy	                  Eventual consistency, sagas needed
+            Debugging	              Simple (single process, stack traces)	    Complex (distributed tracing required)
+            Latency	                In-process function calls	                Network calls between services
+            Failure	                Entire app fails together	                Partial failure possible
+            Development speed	      Fast initially, slows with size	          Slower initially, scales with teams
+
+    When to choose Monolith
+        Small team (< 10 engineers)
+        Unclear domain boundaries
+        Early-stage product (still exploring)
+        Simple deployment requirements
+        Strong consistency needed everywhere
+    The monolith-first approach (recommended by Martin Fowler): Start monolithic, identify service boundaries as the system matures, then extract services where the pain is greatest.
+
+    When to Choose Microservices
+        Large team (> 20 engineers) that can’t ship independently
+        Different parts have vastly different scaling needs (e.g., search vs checkout)
+        Different parts have different release cadences
+        Clear domain boundaries exist
+        Need technology diversity (ML service in Python, API in Go)
+        
