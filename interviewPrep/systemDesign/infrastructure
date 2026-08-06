@@ -335,8 +335,35 @@ Q4. CDN vs Read Replica ?
         
     
 
-5* API Gateway
+5* API Gateway :
+    An API gateway is a single entry point fro all client requests into a microservice architecture. It acts as a reverse proxy that routes requests to appropriate backend services while handling cross-cutting concerns like authentication, rate limiting, and response transformation.
+        Without a gateway, every client must 
+          - know the address of every microservice
+          - Handle authentication with each service individually
+          - Make multiple round trips to compose a single view
+          - Deal with different protocols (gRPC, REST, GraphQL)
+        Gateway Responsibilities
+          - Authentication and Authorization               Validate JWT/ OAuth tokens before forwarding
+          - Rate Limiting                                  Enforce per-user or per-IP request limits
+          - Request Routing                                Map /api/user/* to user service, Map /api/orders/* to order service
+          - Request caching                                Cache GET responses at the edge
+          - Request Transformation/ Protocol Translation   Convert REST to gRPC, add headers, rewrite paths
+          - Request Aggregation                            Combine responses from multiple services into one
+          - SSL Termination                                Handle TLS at the gateway, use plain HTTP internally
+          - Load balancing / Circuit Breaking              Stop forwarding to unhealthy services
+          - Logging and Metrics / Observability            Centralized logging, tracing, metrics for all traffic
+
+    Backend for Frontend (BFF) pattern
+        Different clients have different needs. A mobile app needs compact responses; a web dashboard needs rich data. BFF provides a dedicated gateway per client type.
+        BFF benefits:
+          - optimized response payloads per client (mobile gets less data)
+          - Differnet auth flows (mobile = OAuth + biometric, web = session cookies)
+          - Independent deployment per client team
+          - Can aggregate multiple backend calls into one client optimized response
+      Used by: Netflix (per-device BFF), SoundCloud, Spotify
+
     
+  
         
     
 
