@@ -146,16 +146,74 @@ Q4. How does Netflix manage 700+ microservices ?
             - Batch layer periodically recomputes accurate results (last 24h+)
             - Serving layer merges both views — recent data from stream, historical from batch
         Problem: You maintain TWO codepaths (batch + stream) for the same logic. Bugs in one but not the other cause inconsistencies.
-Kappa Architecture
-    Kappa architecture simplifies by using ONLY the stream layer, with the ability to reprocess by replaying the stream:
-                Data Sources => Event Log - Kafka => Replay from offset 0 for reprocessing => Stream Processor v2 - new instance => New Serving DB => Swap when caught up => Serving DB => Query API
-    How it works:
-        - All data flows through a single event log (Kafka with long retention)
-        - Stream processor handles real-time processing
-        - For reprocessing: deploy a new processor version, replay from the beginning of the log
-        - When the new version catches up, swap it in as the primary
-    Advantage: Single codebase for all processing. No batch/stream code divergence. Limitation: Requires retaining the full event log (or at least the history you need to reprocess).
-        
+    
+    Kappa Architecture
+        Kappa architecture simplifies by using ONLY the stream layer, with the ability to reprocess by replaying the stream:
+                    Data Sources => Event Log - Kafka => Replay from offset 0 for reprocessing => Stream Processor v2 - new instance => New Serving DB => Swap when caught up => Serving DB => Query API
+        How it works:
+            - All data flows through a single event log (Kafka with long retention)
+            - Stream processor handles real-time processing
+            - For reprocessing: deploy a new processor version, replay from the beginning of the log
+            - When the new version catches up, swap it in as the primary
+        Advantage: Single codebase for all processing. No batch/stream code divergence. Limitation: Requires retaining the full event log (or at least the history you need to reprocess).
+            
+    Lambda vs Kappa
+        Aspect	        Lambda Architecture	                    Kappa Architecture
+        Codebases	    Two (batch + stream)	                One (stream only)
+        Reprocessing	Re-run batch job	                    Replay stream from offset 0
+        Accuracy	    Batch corrects stream approximations	Single source of truth
+        Complexity	    Higher (maintain both paths)	        Lower (one path)
+        Storage	Data    lake + stream	                        Event log (long retention)
+        Best for	    Very large historical datasets	        Event-sourced systems
+    
+    Windowing in Stream Processing
+        Streams are unbounded — you need windows to create finite chunks for aggregation:
+    Window Type	        Description	                                                  Use Case
+    Tumbling	        Fixed-size, non-overlapping (every 5 min)	                  Hourly click counts
+    Sliding	            Fixed-size, overlapping (5 min window, slides every 1 min)	  Moving average
+    Session	            Dynamic, grouped by activity gaps	                          User session analytics
+    Global	            Single window for all data	                                  Running total
+
+    Exactly-Once Semantics in Streaming
+            Guarantee	    Meaning	                   Complexity
+            At-most-once	May lose events	           Lowest
+            At-least-once	No loss, may duplicate	   Medium
+            Exactly-once	No loss, no duplicates	   Highest
+    Flink achieves exactly-once via distributed snapshots (Chandy-Lamport algorithm). Kafka Streams uses idempotent producers + transactional writes.
+
+    When to Use Which
+        Use Batch when:
+            - Latency of hours is acceptable (daily reports, ML model training)
+            - Processing requires the complete dataset (training a recommendation model)
+            - Simple retry/reprocessing is important
+            - Cost efficiency matters (spot instances, off-peak processing)
+        Use Stream when:
+            - Real-time results needed (fraud detection, live dashboards)
+            - Events must trigger immediate actions (alerts, notifications)
+            - Data arrives continuously and must be acted on immediately
+            - Low latency is a core requirement
+        Use Lambda when:
+            - You need BOTH real-time AND accurate historical views
+            - Stream processing alone can’t handle late-arriving data
+            - The batch layer serves as a correction mechanism
+        Use Kappa when:
+            - The event log can be retained long enough for reprocessing
+            - You want a single processing paradigm
+            - Event sourcing is your data model
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
