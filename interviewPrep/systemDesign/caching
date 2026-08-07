@@ -338,13 +338,71 @@ Q5. Whats the difference between rate limiting and throttling ?
             1 billion	    1%	                9.6B bits	        7	                ~1.2 GB
         Compare this to storing 1 billion URLs (avg 50 bytes each) = 50 GB. A Bloom filter uses 40x less memory.
 
+        Key Properties
+            Property	        Value
+            False negatives	    NEVER (if filter says “not present,” it’s guaranteed)
+            False positives	    Possible (configurable rate, typically 1%)
+            Deletion	        NOT supported (unsetting bits could affect other elements)
+            Space	            O(m) bits — far less than storing actual elements
+            Insert time	        O(k) hash computations
+            Query time	        O(k) hash computations
+        
+        Use Case	                    Company	                        How
+    Avoid disk reads (LSM-tree)    	Cassandra, LevelDB, RocksDB	    Check if an SSTable might contain the key before reading from disk
+    Duplicate content detection	    Medium, Twitter	                Check if a user has already seen a post/article
+    Malicious URL detection	        Google Chrome Safe Browsing	    Check URL against local Bloom filter before querying server
+    Cache miss optimization	        Akamai CDN	                    Avoid caching one-hit-wonders; only cache items requested 2+ times
+    Username/email uniqueness	    Registration flows	            Quick “definitely available” response without hitting DB
+    Weak password detection	        HaveIBeenPwned	                Check if password hash exists in known breach sets
 
+        Variants
+        Variant	                Supports Deletion?	Extra Feature
+        Standard Bloom Filter	No	                Simplest, most common
+        Counting Bloom Filter	Yes	                Uses counters instead of bits (4 bits per slot)
+        Cuckoo Filter	        Yes	                Better space efficiency for FP < 3%
+        Quotient Filter	        Yes	                Cache-friendly, supports merging
+        Scalable Bloom Filter	No	                Grows dynamically as elements are added
 
+        Bloom Filter vs Alternatives
+        Approach	                Memory	                False Positives	    False Negatives	Deletion
+        Bloom Filter	            Very low	            Yes (tunable)	    Never	        No
+        HashSet	                    High (stores elements)	Never	            Never	        Yes
+        Cuckoo Filter	            Low	                    Yes (tunable)	    Never	        Yes
+        HyperLogLog	                Very low	            N/A (counts only)	N/A	            No
+        Sorted Set + Binary Search	High	                Never	            Never	        Yes
 
+    When to Use
+    ✅ Use when:
+        Space efficiency matters more than absolute accuracy
+        False positives are acceptable but false negatives are not
+        You need to quickly check membership in a very large set
+        You want to avoid expensive operations (disk reads, network calls) for elements definitely not in a set
+        The set is write-once or rarely updated
+    
+    ❌ Don’t use when:
+        You need to delete elements (use Cuckoo Filter instead)
+        False positives are unacceptable (use exact set membership)
+        The set is small enough to fit in a HashSet
+        You need to retrieve the actual stored elements (Bloom filters only answer yes/no)
+        You need exact count of elements (use HyperLogLog)
 
+Q1. Why cant Bloom filters have false negatives ?
+    Because insertion only sets bits from 0 to 1, never from 1 to 0. If an element was inserted, all its hash positions are guaranteed to be 1. 
+    If any hash position is 0, the element was definitely never inserted. There's no mechanism by which an inserted elements bits could become unset.
 
+Q2. Why cant you delete from a standard Bloom filter ?
+    Multiple elements can hash to the same bit position. If you clear a bit for a element A, you might be clearing a bit that element B also needs. This would create a false negative for B, violating the core guarantee.
+    Bloom Filters solve this by using counters instead of single bits - you decremetn on delete rather than clearing
 
+Q3. How would you use a Bloom filter in a URL shortener ?
+    Before generating a new short URL, check the Bloom filter: "Does this short code already exist?" If the filter says NO, the code is definitely available - write it directly.
+    If the filter says MayBe, query the database to confirm. This eliminates database lookups for ~99% of URL generation requests (assuming 1% FP rate), massively reducing DB load.
 
+Q4. How does Google Chrome use Bloom filters for safe Browsing ?
+    Chrome downloads a Bloom filter containing hashes of know malicious URLs (updated every 30 minutes). When you visit a URL, chrome checks it against the local Bloom filter. If the filter says "not present" - no network call neded (safe).
+    If it says "may be present" - chrome sends a hash prefix to Google's server for confirmation. This keeps browsing fast while protecting against 99%+ of malicious URLs without sending every URL you visit to Google.
+
+    
 
 
 
