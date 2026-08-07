@@ -238,3 +238,41 @@ Best practice: Apply at the edge (API Gateway level). Don’t put rate limiting 
         Stripe	        100/sec (test mode)	        Per-API-key
         Google Maps	    50 requests/sec	            Per-project
         OpenAI	        Tokens/min + requests/min	Dual limit
+
+Q1. Where would you add rate limiting in this design?
+    At the API Gateway level, before requests reach any backend service. 
+    Use Redis for distributed state across multiple gateway instances.
+
+Q2. What algorithm would you use ?
+    Token Bucket for most cases - its simple, allows controlled bursts, and only needs 2 values per key (tokens + last refill timestamp).
+    For stricter rqeuirements, Sliding window counter
+
+Q3. What if Redis is down ?
+    Fail open (allow all requests) or fail closed (reject all). 
+    Usually fail open - better to serve some extra requests than reject all users. 
+    Log the failure and alert.
+
+Q4. How do you handle distributed rate limiting without a central store ?
+    Each server gets a fraction of the limit (100 total/ 10 servers = 10 per server). Coarse but works without coordiantion. 
+    Or use the local + sync approach with periodic aggregation.
+
+Q5. Whats the difference between rate limiting and throttling ?
+    Rate limiting = hard reject after limit. Throttling = slow down (queue/delay) instead of reject.
+    Rate limiting is simpler and more common.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
