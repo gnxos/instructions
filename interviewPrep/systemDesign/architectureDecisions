@@ -302,6 +302,153 @@ Q4. How would you build a real-time leaderboard?
             Best for	        Public APIs, CRUD	                Mobile apps, complex UIs	    Internal microservices
             Learning curve	    Low	                                Medium	                        High
 
+        Pagination
+            Three common patterns:
+            1. Offset-Based (simplest)
+                    GET /posts?page=3&limit=20
+                    → Skip 40 items, return next 20
+                    Response:
+                    {
+                      "data": [...],
+                      "pagination": {
+                        "page": 3,
+                        "limit": 20,
+                        "total": 1500,
+                        "totalPages": 75
+                      }
+                    }
+            Problem: Slow for large offsets (DB must scan and skip). Items can shift if new data is inserted.
+            
+            2. Cursor-Based (recommended for feeds)
+                    GET /posts?cursor=eyJpZCI6MTAwfQ&limit=20
+                    → Get 20 items after cursor position
+                    
+                    Response:
+                    {
+                      "data": [...],
+                      "pagination": {
+                        "nextCursor": "eyJpZCI6MTIwfQ",
+                        "hasMore": true
+                      }
+                    }
+            Cursor = encoded pointer (usually base64 of last item’s ID or timestamp). Stable even if new items are added.
+            
+            3. Keyset-Based (most performant)
+                    GET /posts?after_id=100&limit=20
+                    → WHERE id > 100 ORDER BY id LIMIT 20
+            Uses indexed column directly. O(1) regardless of offset.
+
+            Pattern	    Pros	                            Cons	                            Best For
+            Offset	    Simple, supports “jump to page N”	Slow at large offsets, unstable	    Admin panels, small datasets
+            Cursor	    Stable, consistent performance	    Can’t jump to page N	            Infinite scroll, feeds
+            Keyset	    Fastest, uses index directly	    Can’t jump, needs sortable key	    High-volume data, timelines
+
+        Idempotency Keys
+            Ensures that retrying a request doesn’t cause duplicate side effects.
+                    Without idempotency:
+                      Client: POST /payments { amount: 100 } → timeout, no response
+                      Client: POST /payments { amount: 100 } → retry
+                      Result: User charged $200 (double charge!)
+                    
+                    With idempotency key:
+                      Client: POST /payments
+                              Idempotency-Key: "abc-123-def"
+                              { amount: 100 } → timeout
+                      Client: POST /payments
+                              Idempotency-Key: "abc-123-def"
+                              { amount: 100 } → retry
+                      Server: "I already processed abc-123-def, returning cached result"
+                      Result: User charged $100 (correct!)
+
+        API Versioning
+            URL Path Versioning (most common)
+                GET /v1/users/123
+                GET /v2/users/123
+
+            Header Versioning
+                GET /users/123
+                Accept: application/vnd.api+json; version=2
+
+            Query Parameter Versioning
+                GET /users/123?version=2
+
+                Approach	            Pros	                                Cons
+                URL path (/v1/)	        Obvious, cacheable, easy to route	URL pollution
+                Header	                Clean URLs	                        Hidden, hard to test in browser
+                Query param	            Easy to add	                        Caching complications
+
+    In interviews, use URL path versioning. It’s simplest and most widely adopted.
+
+        API Design Best Practices for Interviews
+            1. Use nouns, not verbs:
+               ✓ GET /users/123/orders
+               ✗ GET /getUserOrders?id=123
+            
+            2. Plural resource names:
+               ✓ /users, /orders, /products
+               ✗ /user, /order, /product
+            
+            3. Nest for relationships (max 2 levels):
+               ✓ /users/123/orders
+               ✓ /orders/456/items
+               ✗ /users/123/orders/456/items/789/reviews
+            
+            4. Use query params for filtering:
+               GET /orders?status=pending&created_after=2024-01-01
+            
+            5. Return meaningful errors:
+               {
+                 "error": {
+                   "code": "INSUFFICIENT_BALANCE",
+                   "message": "Account balance is $50, transfer requires $100",
+                   "field": "amount"
+                 }
+               }
+            
+            6. Always include request IDs for debugging:
+               X-Request-Id: req_abc123def456
+
+        When to Use Which
+                Scenario	                        Choice	            Why
+            Public-facing API	                REST	            Simple, cacheable, well-understood
+            Mobile app with complex views	    GraphQL	            Reduce round trips, fetch exactly needed data
+            Microservice-to-microservice	    gRPC	            Fast, typed, streaming support
+            Real-time updates	                WebSocket + REST	REST for CRUD, WS for push
+            File uploads	                    REST (multipart)	Well-supported, simple
+            Internal tooling	                REST or gRPC	    Depends on team expertise
+
+        Real-World Examples
+                Company	        Approach
+            Stripe	        REST with exceptional documentation. Idempotency keys on all POSTs. Versioning via date headers.
+            GitHub	        REST v3 + GraphQL v4. Moved to GraphQL for complex nested data (repos, issues, PRs, comments).
+            Netflix	        GraphQL (Federated) for BFF (Backend for Frontend). gRPC between internal microservices.
+            Google	        gRPC for all internal services. Public APIs are REST with gRPC transcoding.
+            Shopify	        GraphQL for partners/merchants. Reduced API calls by 50% vs REST.
+
+Q1. How would you desing the API for this system ?
+    Start with core resources (nouns). Map each functional requirement to an endpoint. 
+    Use REST with JSON. Define request/ response shapes. Add auth (JWT in Authorization header).
+    Add pagiantion for list endpoints. Add idempotency keys for mutations.
+
+Q2. REST or GraphQL for this design ?
+    REST for public APIs, simpler caching and when clinets have predictable data needs. 
+    GraphQL when clients are diverse (web, mobile, TV) and need differnet data shapes from the same backend.
+
+Q3. How do you handle breaking changes ?
+    Version the API (URL path: /v1/, /v2/). Never remove fields in an existing version - only add.
+    Deprecate old versions with a sunset header and timeline. Run old + new versions simultaneously during migration
+
+Q4. How do you secure your API ?
+    Authentication (JWT or API keys in Authorization header). Authorization (RBAC or ABAC). Rate limiting (per user/ IP).
+    Input validation (reject malformed requests). HTTPS only. Never expose imternal IDs if they reveal information
+
+Q5. How do you make APIs Idempotent ?
+    GET/PUT/DELETE are naturally idempotent. 
+    For POST (creates), use client generated idempotency keys stored in Redis with the response. 
+    If the same key is seen again, return the stored response without re-processing.
+
+
+
 
 
 
