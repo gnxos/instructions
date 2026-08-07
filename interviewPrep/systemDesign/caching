@@ -260,6 +260,101 @@ Q5. Whats the difference between rate limiting and throttling ?
     Rate limiting = hard reject after limit. Throttling = slow down (queue/delay) instead of reject.
     Rate limiting is simpler and more common.
 
+3* Bloom Filters
+        A bloom filter is a space efficient probabilistic datastructure that answers the question: "Is this element in the set ?"
+        It can tell "definitely not in the set" or "probably in the set" but never gives false negatives.
+        How it works :
+            Think of it as a tiny array of light switches (bits). Initially all OFF (0).
+
+            Setup: You have a bit array of 10 slots and 3 hash functions.
+                Bit array: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                             0  1  2  3  4  5  6  7  8  9
+
+            Step 1: INSERT “cat”
+                Run “cat” through 3 hash functions:
+                hash1(“cat”) = 1
+                hash2(“cat”) = 4
+                hash3(“cat”) = 7
+                Set those positions to 1:
+                    Bit array: [0, 1, 0, 0, 1, 0, 0, 1, 0, 0]
+                                 0  1  2  3  4  5  6  7  8  9
+                                    ↑        ↑        ↑
+                                  cat      cat      cat
+            
+            Step 2: INSERT “dog”
+                Run “dog” through 3 hash functions:
+                hash1(“dog”) = 2
+                hash2(“dog”) = 4 ← same position as “cat”! That’s fine, just stays 1
+                hash3(“dog”) = 9
+                Set those positions to 1:
+                    Bit array: [0, 1, 1, 0, 1, 0, 0, 1, 0, 1]
+                                 0  1  2  3  4  5  6  7  8  9
+                                    ↑  ↑     ↑        ↑     ↑
+                                  cat dog  cat+dog   cat   dog
+
+            Step 3: QUERY “cat” — is it in the set?
+                Hash “cat” → positions 1, 4, 7. Check each:
+                Position 1 = 1 ✓
+                Position 4 = 1 ✓
+                Position 7 = 1 ✓
+            All bits are 1 → “probably yes” (and in this case, correct — we did insert “cat”)
+
+            Step 4: QUERY “bird” — is it in the set?
+                Hash “bird” → positions 1, 5, 9. Check each:
+                Position 1 = 1 ✓
+                Position 5 = 0 ✗ ← STOP. Definitely NOT in the set.
+            If even ONE bit is 0, the element was never inserted. Guaranteed.
+            
+            Step 5: QUERY “fox” — the false positive
+                Hash “fox” → positions 1, 2, 9. Check each:
+                Position 1 = 1 ✓ (set by “cat”)
+                Position 2 = 1 ✓ (set by “dog”)
+                Position 9 = 1 ✓ (set by “dog”)
+            All bits are 1 → “probably yes” — but we NEVER inserted “fox”! This is a false positive. The bits were coincidentally set by other elements.
+
+    Why this happens
+        The bit array is shared. Different elements can set the same bits. When all of an element’s hash positions happen to be set by OTHER elements, the filter incorrectly says “probably yes.” This is the unavoidable tradeoff for extreme space efficiency.
+        The fix: make the bit array bigger (more bits = fewer collisions = fewer false positives). With the right sizing (~10 bits per element), false positive rate drops below 1%.
+
+    The two guarantees
+        Filter says	                Meaning	                    Can it be wrong?
+        “Definitely NOT in set”	    At least one bit was 0	    Never wrong — if we’d inserted it, all bits would be 1
+        “Probably in set”	        All bits are 1	            Sometimes wrong — other elements may have set those bits
+    This asymmetry is what makes it useful: you trust the “no” answer absolutely, and tolerate occasional false “yes” answers.
+
+    False Positive Rate
+        The probability of a false positive depends on three factors:
+            Parameter	                   Symbol	Effect on False Positive Rate
+            Bit array size	                m	    Larger m → fewer collisions → lower FP rate
+            Number of hash functions	    k	    Optimal k minimizes FP (too few or too many is bad)
+            Number of inserted elements	    n	    More elements → more bits set → higher FP rate
+    Formula: P(false positive) ≈ (1 - e^(-kn/m))^k
+
+        Practical sizing:
+            Elements (n)	Target FP Rate	    Bits needed (m)	    Hash functions (k)	Memory
+            1 million	    1%	                9.6M bits        	7	                ~1.2 MB
+            1 million	    0.1%	            14.4M bits	        10	                ~1.8 MB
+            100 million	    1%	                960M bits	        7	                ~120 MB
+            1 billion	    1%	                9.6B bits	        7	                ~1.2 GB
+        Compare this to storing 1 billion URLs (avg 50 bytes each) = 50 GB. A Bloom filter uses 40x less memory.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
