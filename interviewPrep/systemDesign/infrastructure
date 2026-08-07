@@ -333,7 +333,59 @@ Q4. CDN vs Read Replica ?
         Websocket
         Throughput
         
-    
+    Proxy Protocols Comparison
+        Protocol	    Layer	Use Case	                      Example
+        HTTP Proxy	  L7	  Web traffic, API routing	      Nginx, HAProxy
+        SOCKS5 Proxy	L5	  General TCP traffic, anonymity	Tor, SSH tunnels
+        TCP Proxy	    L4	  Database connections, raw TCP	  HAProxy, AWS NLB
+        UDP Proxy	    L4	  DNS, gaming, streaming	        Envoy, Nginx Stream
+
+    Real-World Architectures
+        Company	    Proxy Setup
+        Netflix	    Zuul (edge gateway) + Envoy (internal mesh)
+        Uber	      Nginx (edge) + custom sidecar proxies
+        Cloudflare	Global reverse proxy + CDN + WAF + DDoS
+        Google	    GFE (Google Front End) as edge reverse proxy for all services
+        Airbnb	    Envoy as both edge proxy and service mesh sidecar
+
+When to Use / When NOT to Use
+  ✅ Use a proxy when:
+      You need to hide internal infrastructure from clients (reverse proxy)
+      Traffic needs centralized TLS termination, caching, or compression
+      Load balancing across multiple backend instances is required
+      You want to add retries, circuit breaking, and observability without code changes (sidecar)
+      Security requires traffic inspection, rate limiting, or WAF
+
+❌ Don’t use when:
+      Direct connection is required for ultra-low latency (e.g., HFT)
+      Single backend server with no need for any cross-cutting concerns
+      The proxy becomes a performance bottleneck and can’t be scaled
+      Adding complexity without clear benefit (YAGNI)
+
+Q1. Whats the difference between a reverse proxy and a load balancer ?
+    A load balancer is one specific function (distribute traffic across servers). 
+    A reverse proxy is a broader concept that includes load balancing plus: SSL termination, caching, compression, request/ response transformation, A/B testing and security features.
+    Every reverse proxy can load balance, but not every load balancer is a full reverse proxy. AWS ALB is both; AWS ALB is primarily a load balancer (L4, no caching/ transformation).
+
+Q2. How does a sidecar proxy enable zero trust networking?
+    In a service mesh, every pod gets an Envoy sidecar that terminates and originates mTLS. All pod-to-pod traffic goes through sidecars, never directly between application processes. Each sidecar has a cryptographic identity (SPIFFE) issued by the control plane. 
+    Traffic between sidecars is encrypted and authenticated. This means even if an attacker compromises the network, they can’t eavesdrop or impersonate services — every connection is mutually authenticated at L7.
+
+Q3: Why would you put Nginx in front of an application that already has a built-in HTTP server?
+    (1) SSL termination — Nginx handles TLS efficiently, reducing CPU on app servers. 
+    (2) Static file serving — Nginx serves static assets from disk without hitting the app. 
+    (3) Connection buffering — Nginx absorbs slow clients (slow loris) so app server threads aren’t blocked. 
+    (4) Rate limiting and security — protect the app without app-level code. 
+    (5) Load balancing across multiple app instances. 
+    (6) Caching — serve repeated responses without hitting the app.
+
+Q4. When would you choose HAProxy over Nginx?
+    HAProxy excels at pure TCP/HTTP load balancing with advanced health checking, connection draining, and session persistence. 
+    Choose HAProxy when: 
+          (1) you need L4 (TCP) proxying for non-HTTP protocols (databases, MQTT), 
+          (2) you need advanced active health checks with agent-check protocol, 
+          (3) connection draining during deploys is critical, 
+          (4) you need detailed per-backend statistics. Choose Nginx when: you also need static file serving, caching, or complex URL rewriting that HAProxy can’t do.
 
 5* API Gateway :
     An API gateway is a single entry point fro all client requests into a microservice architecture. It acts as a reverse proxy that routes requests to appropriate backend services while handling cross-cutting concerns like authentication, rate limiting, and response transformation.
