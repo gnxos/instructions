@@ -222,16 +222,85 @@ Q4. How would you build a real-time leaderboard?
     The sorted set is materialized to Redis (Sorted Set with ZADD). The leaderboard API reads directly from Redis (ZREVRANGE for top N). 
     For global leaderboards with millions of users, partition by score ranges and merge at query time.
 
+3* API Design
+        API design is defining the contract between clients and servers — what endpoints exist, what data goes in, what comes out, and how errors are communicated.
+        REST (Representational State Transfer)
+            The most common API style. Uses HTTP methods + resource-based URLs.
+            REST Principles
+                Principle	        Meaning	                        Example
+                Resources	        Everything is a noun	        /users, /orders, /products
+                HTTP Methods	    Verbs = actions	                GET, POST, PUT, DELETE, PATCH
+                Stateless	        Each request is self-contained	Token in every request header
+                Uniform Interface	Predictable URL patterns	    GET /users/123/orders
+            HTTP Methods
+                GET    /users          → List all users (read)
+                GET    /users/123      → Get user 123 (read)
+                POST   /users          → Create a new user (create)
+                PUT    /users/123      → Replace user 123 entirely (full update)
+                PATCH  /users/123      → Partially update user 123 (partial update)
+                DELETE /users/123      → Delete user 123 (delete)
+            
+            REST Response Codes
+                Code	Meaning	                    When
+                200	    OK	                    Successful GET, PUT, PATCH
+                201	    Created	                Successful POST
+                204	    No Content	            Successful DELETE
+                400	    Bad Request	            Validation failed
+                401	    Unauthorized	        Missing/invalid auth
+                403	    Forbidden	            Valid auth but no permission
+                404	    Not Found	            Resource doesn’t exist
+                409	    Conflict	            Duplicate or state conflict
+                429	    Too Many Requests	    Rate limited
+                500	    Internal Server Error	Server bug
 
+        GraphQL
+            A query language for APIs. Client specifies exactly what data it needs.
+                    # REST: multiple round trips
+                    GET /users/123          → { id, name, email, avatar, ... }
+                    GET /users/123/posts    → [{ id, title, body, ... }, ...]
+                    GET /users/123/friends  → [{ id, name, ... }, ...]
+                    
+                    # GraphQL: one request, exact data
+                    POST /graphql
+                    {
+                      user(id: 123) {
+                        name
+                        email
+                        posts(limit: 5) { title }
+                        friends { name }
+                      }
+                    }
+                    → Returns exactly what you asked for, nothing more
 
-
-
-
-
-
-
-
-
+        gRPC (Google Remote Procedure Call)
+            Binary protocol using Protocol Buffers. Fast, strongly typed, designed for service-to-service communication.
+                    // user.proto - defines the contract
+                    service UserService {
+                      rpc GetUser (GetUserRequest) returns (User);
+                      rpc ListUsers (ListUsersRequest) returns (stream User);
+                    }
+                    
+                    message GetUserRequest {
+                      string user_id = 1;
+                    }
+                    
+                    message User {
+                      string id = 1;
+                      string name = 2;
+                      string email = 3;
+                    }
+        Comparison Table
+                Feature	            REST	                            GraphQL	                        gRPC
+            Protocol	        HTTP/1.1 or HTTP/2	                HTTP (typically POST)	        HTTP/2
+            Format	            JSON	                            JSON	                        Protocol Buffers (binary)
+            Schema	            OpenAPI (optional)	                Strongly typed (SDL)	        Strongly typed (.proto)
+            Over-fetching	    Common	                            No (client picks fields)	    No (typed messages)
+            Under-fetching	    Common (need multiple calls)	    No (nested queries)	            Need separate RPCs
+            Streaming	        No (use WebSockets)	Subscriptions	Native bidirectional            streaming
+            Caching	            Easy (HTTP caching, CDN)	        Hard (all POSTs)	            Hard
+            Browser support	    Native	                            Native	                        Needs grpc-web proxy
+            Best for	        Public APIs, CRUD	                Mobile apps, complex UIs	    Internal microservices
+            Learning curve	    Low	                                Medium	                        High
 
 
 
