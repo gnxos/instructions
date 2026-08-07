@@ -76,5 +76,71 @@ In HLD interviews, you’ll mostly discuss Layer 4 (Redis/Memcached).
             Random	                        Remove a random item	                        When access patterns are uniform
         In interviews, say LRU + TTL. LRU handles space limits. TTL handles staleness.
 
+    Cache invalidation (The Hard Part)
+        Database is updated, but cache still has old data. User sees stale information
+        Solutions :
+        1. TTL (Time To Live):
+                Set TTL = 5 minutes on every cache entry.
+                After 5 min, entry auto-deletes.
+                Next read fetches fresh data from DB.
+            Trade-off: data can be up to 5 min stale.
+        2. Explicit Invalidation:
+                On write/update: delete the cache key immediately.
+                Next read will miss → fetch fresh data → re-cache.
+        3. Event based invalidation (CDC)
+                Database change → publish event → cache subscriber deletes/updates key
+            Best for: when multiple services write to the same DB and any of them might invalidate the cache.
+    
+    Cache Stampede (Thundering Herd)
+        The Problem : Popular cache key expires → 1000 concurrent requests all miss at the same time → all 1000 hit the database simultaneously → DB crashes.
+        Solutions :
+            1. Lock/Mutex: First thread to miss acquires a lock. Others wait. First thread refreshes cache. Others read from refreshed cache.
+            2. Early Recompute: Refresh the cache BEFORE it expires (background job refreshes at 80% of TTL).
+            3. Stale-While-Revalidate: Serve stale data immediately, refresh in background.
+
+    Redis vs Memcached
+                                    Redis                                             Memcached
+        Data structures	    Strings, Lists, Sets, Sorted Sets, Hashes, Streams	    Strings only
+        Persistence	        Optional (RDB snapshots, AOF)	                        None (pure cache)
+        Replication	        Primary-replica	                                        No built-in
+        Pub/Sub	            Yes	                                                    No
+        Lua scripting	    Yes	                                                    No
+        Max value size	    512MB	                                                1MB
+        Multi-threaded	    Single-threaded (6.0+ has I/O threads)	                Multi-threaded
+        Use case	        Cache + data structure server + pub/sub + queues	    Pure high-throughput cache
+
+    In interviews, always say Redis. It does everything Memcached does plus more. Only pick Memcached if asked “what if you need pure simple caching with maximum throughput and don’t need data structures?”
+
+    When NOT to Cache
+        - Write-heavy workloads (cache invalidates faster than it’s read)
+        - Random access patterns (every request is unique — cache never helps)
+        - Data that must be perfectly fresh (use DB directly with read replicas)
+        - Large objects rarely accessed (wastes memory)
+
+Q1. Where would you add caching in this design ?
+    Betweeen the API server and the database. Cache the most frequently read data with TTL. Use cache-aside (lazy loading) pattern.
+
+Q2. What happens if the cache goes down ?
+    All requests fall through to the database. The system is slower but still works. Desing for graceful defrafation - dont make cache a single point of failure
+
+Q3. How do you keep cache consistent with the database ?
+    Use cache-aside with TTL (5-15 min). On writes, invalidate the cache key explicity. For stronger consistency, use write-through.
+
+Q4. How do you handle hot keys ?
+    A single cached item getting millions of requests (celebrity profile, viral post).
+    Solution : local in-memory cache on each server (Layer 3) with very short TTL (10s). Reduces Redis load.
+
+Q5. what's the cache hit ratio you'd target ?
+    90 - 99% for read heavy workloads. If below 80%, your TTL might be too short or your access patterns are too random for caching to help.
+
+
+
+
+
+
+
+
+
+
 
 
