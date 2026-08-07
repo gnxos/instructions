@@ -59,8 +59,22 @@ In HLD interviews, you’ll mostly discuss Layer 4 (Redis/Memcached).
                           (Application never talks to DB directly for reads)
           When to use: When using a caching library that supports it (e.g., Caffeine with a loader function).
 
+    Comparison Table
+        Strategy	    Read Latency	        Write Latency	        Data Freshness	            Complexity
+        Cache-Aside	    Miss: slow, Hit: fast	Normal (DB only)	    May be stale (TTL-bound)	Low
+        Write-Through	Always fast	            Slow (2 writes)	        Always fresh	            Medium
+        Write-Behind	Always fast	            Very fast (cache only)	Fresh in cache, DB lags	    High
+        Read-Through	Miss: slow, Hit: fast	Normal	                TTL-bound	                Low
 
-
+    Cache Eviction Policies
+        When cache is full, which item do you remove?
+            Policy	                        How	                                            Best For
+            LRU (Least Recently Used)	    Remove item accessed longest ago	            General purpose (most common)
+            LFU (Least Frequently Used)	    Remove item with lowest access count	        Hot content stays (trending feeds)
+            FIFO (First In First Out)	    Remove oldest item	                            Simple, time-based data
+            TTL (Time To Live)	            Remove after fixed time, regardless of usage	All caching (set TTL on every key)
+            Random	                        Remove a random item	                        When access patterns are uniform
+        In interviews, say LRU + TTL. LRU handles space limits. TTL handles staleness.
 
 
 
