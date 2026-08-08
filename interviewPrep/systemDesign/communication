@@ -89,9 +89,91 @@
         - Need message priority
         - Smaller scale
 
+    Key Concepts
+        Partitions (Kafka)
+            A topic is split into partitions. Each partition is an ordered, immutable log.
+            Each partition is consumed by ONE consumer in a consumer group. More partitions = more parallelism.
+            Rule of thumb: Number of partitions >= number of consumers in a group. If you have 10 consumers, you need at least 10 partitions.
+    
+        Offset (Kafka)
+            Each message in a partition has a sequential offset (position number). Consumer tracks which offset it has processed.
+            If consumer restarts, it resumes from committed offset (no duplicate processing if committed correctly).
+        
+        Visibility Timeout (SQS)
+            When a consumer reads a message, it becomes “invisible” to other consumers for a timeout period. If consumer doesn’t delete it within that time, it becomes visible again (re-delivered).
+         
+        Dead Letter Queue (DLQ)
+            Messages that fail processing N times get moved to a separate queue for investigation.
 
+    Back-Pressure
+        Problem: Producer generates messages faster than consumer can process. Queue grows unbounded → runs out of memory/disk.
+        Solutions:
+                Strategy	                How
+            Bounded queue + reject	    Queue has max size. When full, producer gets error (back-pressure signal)
+            Rate limit producers	    Producer can only publish N messages/sec
+            Auto-scale consumers	    Add more consumer instances when queue depth grows
+            Alert on queue depth	    Alarm when queue > threshold → manual intervention
+
+    Common Interview Patterns
+        Pattern 1: Async Processing
+                User action → API responds immediately → Queue → Worker processes in background
+            Example: Video upload → “Upload successful” → Queue → Encoding worker → S3
+
+        Pattern 2: Event Fan-out
+                Order placed → Kafka topic "order_events"
+                  → Notification Service (sends email)
+                  → Inventory Service (reduces stock)
+                  → Analytics Service (tracks metrics)
+                  → Fraud Service (checks patterns)
+
+        Pattern 3: Work Distribution
+                10,000 emails to send → SQS queue → 20 Lambda workers → processed in parallel
+
+        Pattern 4: Rate Smoothing
+                Flash sale: 100K requests/sec spike → Queue buffers → Workers process at steady 10K/sec
+                (Queue absorbs the spike, prevents DB from dying)
+
+Q1. Why not just call the service directly ?
+    Direct calls create tight coupling, no retry on failure, and blocking. With a queue: services are decoupled, messages survive failures, and consumers process at their own pace.
+
+Q2. How do you handle duplicate messages ?
+    At least once delivery means duplicates will happen. Handle on consumer side wth idempotency keys - check if this messageId was already processed before executing.
+
+Q3. How do you ensure ordering ?
+    Kafka: use entity ID as partition key (all events for same entity go to same partition = ordered). SQS FIFO: use message groupID
+
+Q4. What if the queue goes down ?
+    Managed queues (SQS, confluent Kafka) are multi AZ replicated. 
+    If self hosted: Kafa replicates across brokers (replication factor = 3 means 3 copies). Single point of failure is rare.
+
+Q5. When would you not use a queue ?
+    When you need a synchronous response (user is waiting for the result). 
+    When latency must be < 100ms. When teh operation is idempotent and can be retired at the caller level without a queue. 
 
  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
