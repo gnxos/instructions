@@ -383,7 +383,18 @@ When to Use / When NOT to Use
         LinkedIn	Fan-out on write	        Feed pre-computed for faster load. Network smaller than Twitter/FB.
         TikTok	    Fan-out on read	            Algorithm-driven, not follow-based. Content fetched by recommendation model at read time.
 
+Q1. How would you design a news feed system ?
+    Hybrid fan-out. 
+    On Write: Publish post -> fan-out workers to follower timelines (Redis sorted sets) for regular users. Skip clebrities.
+    On Read: fetch pre-computed timeline from cache + pull recent clebrity posts + merge + rank + return top 50. Use Kafka to decouple write from fan-out.
 
+Q2, How do you handle the celebrity problem ?
+
+Q3. Whats the storage requirement for pre-computed timelines ?
+
+Q4. How do you handle a user unfollowing someone ?
+
+Q5. Fan-Out on write or read for notification system ?
 
 
 
