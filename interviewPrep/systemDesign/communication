@@ -58,19 +58,40 @@
 
   Kafka vs SQS vs RabbitMQ
     Feature	          Kafka	                              SQS	                              RabbitMQ
-    Model	            Log-based (append-only)	            Queue (delete after read)	      Queue + Exchange routing
-    Ordering	        Within partition	                  No (Standard) / Yes (FIFO)	    Within queue
-    Retention	        Configurable (days/weeks/forever)	  4 days (max 14)	                Until consumed
-    Replay	          Yes (re-read old messages)	        No (once read, gone)	          No
+    Model	          Log-based (append-only)	          Queue (delete after read)	        Queue + Exchange routing
+    Ordering	      Within partition	                  No (Standard) / Yes (FIFO)	    Within queue
+    Retention	      Configurable (days/weeks/forever)	  4 days (max 14)	                Until consumed
+    Replay	          Yes (re-read old messages)	      No (once read, gone)	            No
     Throughput	      1M+ messages/sec	                  ~3000 msg/sec per queue	        ~20K msg/sec
-    Scaling	          Add partitions	                    Unlimited (managed)	            Add queues/nodes
+    Scaling	          Add partitions	                  Unlimited (managed)	            Add queues/nodes
     Consumer groups	  Built-in	                          Not native	                    Not native (use exchanges)
-    Managed option	  Confluent, MSK	                    AWS SQS (fully managed)	        CloudAMQP, Amazon MQ
+    Managed option	  Confluent, MSK	                  AWS SQS (fully managed)	        CloudAMQP, Amazon MQ
     Best for          Event streaming, CDC	              Simple async tasks, decoupling	Complex routing, RPC
 
+    When to Use Which
+    Choose Kafka when:
+        - High throughput (100K+ events/sec)
+        - Need to replay events (re-process historical data)
+        - Multiple consumers need the same events (consumer groups)
+        - Event sourcing / CDC pipeline
+        - Ordering matters per entity
+
+    Choose SQS when:
+        - Simple job/task queue
+        - Fully managed, zero ops
+        - Don’t need replay
+        - Low-medium throughput is fine
+        - AWS ecosystem
+
+    Choose RabbitMQ when:
+        - Complex routing logic (route to different queues by header/topic)
+        - RPC pattern (request-reply)
+        - Need message priority
+        - Smaller scale
 
 
 
+ 
 
 
 
