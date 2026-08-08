@@ -150,12 +150,46 @@ Q5. When would you not use a queue ?
     When you need a synchronous response (user is waiting for the result). 
     When latency must be < 100ms. When teh operation is idempotent and can be retired at the caller level without a queue. 
 
- 
+2* WebSocket vs SSE vs Polling
+
+    Real time communication :
+        Real-time communication is getting data from server to client as soon as its available, without the clinet explicitly asking for it.
+        Real-world analogy: Imagine waiting for a package delivery.
+            - Polling: You walk to the mailbox every 5 minutes to check. Mostly empty trips.
+            - Long Polling: You stand at the mailbox and wait until the mailman arrives, then go back inside. Repeat.
+            - SSE: You install a doorbell that rings when a package arrives (one-way notification).
+            - WebSocket: You have a direct phone line to the delivery driver who gives you real-time updates, and you can ask questions back.
+    
+    The Four Approaches
+        1. Short Polling (Regular Polling)
+                Client repeatedly asks the server at fixed intervals.
+                Problem: Most requests return empty. Wastes bandwidth and server resources. Delay = up to polling interval.
+
+        2. Long Polling
+                Client sends request, server holds it open until data is available (or timeout).
+                Improvement over polling: No wasted requests. Data arrives as soon as available. But each response requires a new connection.
+
+        3. Server-Sent Events (SSE)
+                Server pushes data to client over a single long-lived HTTP connection. One-way only (server → client).
+                Key feature: Built-in browser reconnection. Uses standard HTTP (works through proxies, CDNs). One-way only.
+        
+        4. WebSocket
+                Full-duplex, bidirectional communication over a single TCP connection.
 
 
-
-
-
+    Comparison Table
+    Feature	                Short Polling	    Long Polling	        SSE	                WebSocket
+    Direction	            Client → Server	    Client → Server	        Server → Client	    Bidirectional
+    Latency	                Up to interval	    Near real-time	        Real-time	        Real-time
+    Connection overhead	    New conn each poll	New conn each response	Single long-lived	Single long-lived
+    Browser support	        All	                All	                    All modern (no IE)	All modern
+    HTTP compatible	        Yes	                Yes	                    Yes	                No (upgrades to WS)
+    Works through proxies	Yes	                Sometimes issues	    Yes	                Sometimes issues
+    Auto-reconnect	        N/A	                Manual	                Built-in	        Manual
+    Server resource usage	Low per request	    Medium (held conns)	    Low	                Medium
+    Scalability	            Easy	            Medium	                Easy	            Hard
+    Max connections	        N/A	                Limited	                ~6 per domain	    ~65K per server
+    Binary data	            No	                No	                    No (text only)	    Yes
 
 
 
