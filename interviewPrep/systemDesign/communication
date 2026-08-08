@@ -177,7 +177,7 @@ Q5. When would you not use a queue ?
                 Full-duplex, bidirectional communication over a single TCP connection.
 
 
-    Comparison Table
+Comparison Table
     Feature	                Short Polling	    Long Polling	        SSE	                WebSocket
     Direction	            Client → Server	    Client → Server	        Server → Client	    Bidirectional
     Latency	                Up to interval	    Near real-time	        Real-time	        Real-time
@@ -191,19 +191,106 @@ Q5. When would you not use a queue ?
     Max connections	        N/A	                Limited	                ~6 per domain	    ~65K per server
     Binary data	            No	                No	                    No (text only)	    Yes
 
+Scaling WebSockets
+    The hardest challenge in real-time systems. Here’s why and how:
+        The Problem
+                Server A has WebSocket to User 1
+                Server B has WebSocket to User 2
+                
+                User 1 sends message to User 2.
+                Server A receives it... but User 2 is on Server B!
+                
+                How does Server A forward to Server B?
+                
+        Solution: Pub/Sub Layer
+                Flow:
+                1. User 1 sends msg to User 2 via WebSocket on Server A
+                2. Server A publishes to Redis channel “user:2”
+                3. Server B (subscribed to “user:2”) receives it
+                4. Server B pushes to User 2’s WebSocket
+
+
+    Connection Management
+        Sticky Sessions (Load Balancer):
+          - Once a WebSocket is established, all traffic goes to same server
+          - Use IP hash or cookie-based routing
+          - Problem: uneven load if some users are chatty
+        
+        Connection Registry (Redis):
+          - Store mapping: userId → serverId
+          - When message arrives, look up which server holds the connection
+          - Route message to correct server via pub/sub
+
+    Heartbeats and Reconnection
+                    Client                              Server
+                      │                                   │
+                      │◀── PING ───────────────────────── │  Every 30s
+                      │──▶ PONG ───────────────────────── │
+                      │                                   │
+                      │◀── PING ───────────────────────── │
+                      │    (no PONG in 10s)               │
+                      │    Connection considered dead     │
+                      │    Clean up resources             │
+
+    When to Use What
+        Use Case	                Best Choice	            Why
+        Chat application	        WebSocket	        Bidirectional, low latency, typing indicators
+        Live sports scores	        SSE	                Server push only, auto-reconnect, simple
+        Stock ticker	            WebSocket	        High-frequency updates, bidirectional (subscribe/unsubscribe)
+        Email inbox	                Long Polling	    Infrequent updates, simpler infra
+        Social media feed refresh	Short Polling	    Low frequency, simple, cacheable
+        Ride tracking (Uber)	    WebSocket or SSE	Continuous location updates
+        Notifications	            SSE	                One-way server push, reliable
+        Online gaming	            WebSocket	        Low latency, bidirectional, binary data
+        IoT sensor data	            WebSocket	        High throughput, bidirectional control
+        Dashboard metrics	        SSE	                Server push, auto-reconnect
+    
+    When NOT to Use WebSockets
+        Infrequent updates (once per minute)  — polling or SSE is simpler
+        One-way server push only              — SSE is lighter weight
+        Behind restrictive corporate proxies  — WebSocket upgrade often blocked
+        When HTTP caching matters             — WebSocket responses can’t be cached
+        Simple CRUD operations                — REST is sufficient
+        When you can’t afford sticky sessions — WebSocket scaling is complex
+    
+    Real-World Examples
+        Company	    Technology	                    Use Case
+        Slack	    WebSocket	                    Real-time messaging, typing indicators, presence
+        Uber	    WebSocket + gRPC streaming	    Driver location tracking, ride status
+        Discord    	WebSocket	                    Voice + text chat, presence, real-time events
+        Robinhood	WebSocket	                    Real-time stock price updates
+        Twitter	    SSE (Streaming API)	            Real-time tweet delivery to clients
+        Facebook	Long Polling (MQTT internally)	Chat, notifications
+        Twitch	    WebSocket (IRC protocol)	    Chat messages during streams
+
+Q1. How would you implement real time messaging in a chat app ?
+    WebSocket for bidirectional communication. Client establishes WS connection on app open. 
+    Messages sent via WS to server, which stores in DB and forwards via Pub/Sub (Redis) to the recipients WS server.
+    Use heartbeats for connection health. On disconnect, queue messages and deliver on reconnect.
+
+Q2. How do you scale WebSockets servers to millions of users ?
+    Multiple WS servers behind a load balancer with sticky sessions. Add Redis Pub/Sub (or Kafka) as a message bus between servers. 
+    Store connection registry (UserId -> ServerId) in Redis. Each server subscribes to channels for its connected users. 
+    Horizontally scale by adding more WS servers.
+
+Q3. What happens when a WebSocket connection drops ?
+    Client side: auto-reconnect with exponential backoff. Server side: heartbeat timeout triggers cleanup. 
+    On reconnect, client sends last recieved messageId, server replays missed messages from a short term buffer (Redis sorted set or DB).
+    Design for-atleast-once delivery with client-side deduplication.
+
+Q4. Why not just use WebSocket for everything ?
+    WebSocket adds complexity (connection management, scaling, sticky sessions). 
+    For one-way push, SSE is simpler and works through CDNs/ proxies.
+    For infrequent data, polling is cheapest.
+    WebSocket shines only when you need low-latency bidirectional communication. Over-engineering with WebSocket when polling suffices wastes engineering effort.
+
+Q5. How would you handle 1 million concurrent WebSocket connections ?
+    Each server handles ~50-100k connections (with proper tuning). Need 10-20 servers. Use consistent hashing to distribute users.
+    Redis Pub/Sub or Kafka for cross-server communication. Monitor connection counts per server. Auto-scale based on connection count metrics. Consider regional deployment to reduce latency.
 
 
 
-
-
-
-
-
-
-
-
-
-
+    
 
 
 
