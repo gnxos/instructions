@@ -74,6 +74,7 @@
       - Reads need denormalized data across multiple aggregates
       - Write throughput and read throughput need to scale independently
       - Different consistency requirements for reads vs writes
+
     When NOT to Use:
       - Simple CRUD applications (blog, basic todo app)
       - When eventual consistency is unacceptable for reads
@@ -83,22 +84,33 @@
 
     Real-World Examples
       Company	                Use Case
-      Stripe	          Every payment state change is an event. Enables dispute resolution, refunds, and audit trails.
+      Stripe	        Every payment state change is an event. Enables dispute resolution, refunds, and audit trails.
       LinkedIn	        Uses Kafka as central event log for all data changes. Services build their own projections.
       Uber	            Trip lifecycle events (requested, matched, started, completed). CQRS for trip tracking vs billing.
-      Event Store Ltd	  Created EventStoreDB specifically for event sourcing.
+      Event Store Ltd	Created EventStoreDB specifically for event sourcing.
       Goldman Sachs	    Trade events for regulatory compliance and audit.
 
 Q1. Why not just use a regular database with an audit log table?
+    An audit log is a secondary artifact - it can drift from reality. With event sourcing, the event log is the source of truth. You can't have inconsistency between state and history because state is derived from history.
+    Also, with event sourcing you can rebuild projections, create new read models retroactively, and replay for debugging.
 
 Q2. How doo you handle the fact that replaying millions of events to get current state is slow?
-
+    Use snapshots. Periodically save the current state (eg. every 1000 events). 
+    To rebuild, load the latest snapshot and replay only events after it.
+    
 Q3. What about eventual consistency between write and read models?
+    Yes, there's a propagation delay (usually milliseconds to seconds). For most use cases this is fine. 
+    If a user MUST read their own write immediately, use "read-your-writes" consistency: after a command, read from the write model (event store) until the projection catches up.
 
 Q4. How do you handle schema evolution when event formats change?
+    Use event versioning. Store a version field with each event. 
+    Consumers (projections) must handle all versions via upcasting — transforming old event formats to new ones on read. Never modify stored events.
 
 Q5. Whats the difference between Event Sourcing and Change Data Capture (CDC)? 
-
+    CDC captures changes FROM a database (after the fact). 
+    Event Sourcing captures changes AS the primary storage (events are the source of truth, not derived from a DB). 
+    CDC is a way to get events out of a traditional DB. 
+    Event Sourcing means events ARE your DB.
 
 
 
