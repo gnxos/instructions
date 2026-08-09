@@ -389,12 +389,21 @@ Q1. How would you design a news feed system ?
     On Read: fetch pre-computed timeline from cache + pull recent clebrity posts + merge + rank + return top 50. Use Kafka to decouple write from fan-out.
 
 Q2, How do you handle the celebrity problem ?
+    Define a threshold (e.g., > 10K followers). Above threshold, don’t fan out on write — store post in celebrity’s own list only. 
+    On read, merge celebrity posts with the pre-computed timeline. This limits write amplification to at most 10K writes per post.
 
 Q3. Whats the storage requirement for pre-computed timelines ?
+    Store only tweet IDs (not full tweets). Each entry: 8 bytes (tweet_id) + 8 bytes (timestamp) = 16 bytes. 
+    Keep last 800 tweets per user. 200M DAU × 800 × 16B = ~2.5 TB in Redis. Expensive but feasible with Redis Cluster.
 
 Q4. How do you handle a user unfollowing someone ?
+    For fan-out on write: don’t immediately remove old posts from timeline (expensive). Let them age out naturally as new posts push them down. 
+    For new posts, the unfollowed user’s tweets simply stop being fanned out. Eventually the timeline contains none of their content.
 
 Q5. Fan-Out on write or read for notification system ?
+    Fan-out on write (push). Notifications are time-sensitive and infrequent per user. 
+    When an event triggers a notification (new follower, like, comment), immediately write to the recipient’s notification inbox. 
+    Users check notifications infrequently, so pre-computing ensures instant load when they do.
 
 4* Dead Letter Queue (DLQ)
     A Dead Letter Queue is a special queue where messages that cannot be processed successfully after multiple attempts are moved. 
@@ -498,13 +507,28 @@ When to Use / When NOT to Use
         - You’re using it as a band-aid for a consumer bug (fix the bug instead)
 
 Q1. How do you prevent a DLQ from growing indefinitely?
+    Set a retention policy (eg 14 days). Monitor DLQ depth with alerts. Implement auto-replay for known transient failures. 
+    For persistent failures, have a DLQ consumer that classifies messages: reprocessable ones go back to the main queue after a fix, truly invalid ones are logged to a permanent audit store and deleted from the DLQ.
+    Run periodic reports on DLQ trends to catch systematic issues early.
 
 Q2. What's the difference between a DLQ and a retry queue?
+    A retry queue is for messages that WILL eventually succeed - they're delayed and re-attempted automatically (eg downstream service is temporarilt down).
+    A DLQ is for messages that have Exhausted all retries and likely wont succeed without intervention (code fix, manual data correction). 
+    The retry queue is automated recovery; teh DLQ is an escalation to humans.
 
 Q3. How would you handle ordering guarantees with a DLQ?
+    If strict ordering matters (e.g., events for a single user must be processed in order), moving one message to the DLQ means subsequent messages for that user are also blocked. 
+    Solutions: (1) Move all messages for that partition key to DLQ together, 
+               (2) Pause processing for that specific key until DLQ is resolved, 
+               (3) Use a per-key retry counter and skip the key after N failures while continuing others. 
+    Kafka’s partition-based ordering makes this particularly challenging.
 
-Q4. How do you implement a DKQ for Kafka where there's no built-in support?
-
+Q4. How do you implement a DLQ for Kafka where there's no built-in support?
+    Create a dead letter topic (e.g., my-topic.DLT). In the consumer, wrap processing in try-catch. 
+    After N failures for a message: (1) Produce the failed message to the DLT with error metadata in headers, 
+                                    (2) Commit the offset on the original topic (so it’s not retried), 
+                                    (3) Continue processing next messages. 
+    A separate monitoring consumer reads the DLT for alerting. For replay, read from DLT and produce back to the original topic.
 
 
 
