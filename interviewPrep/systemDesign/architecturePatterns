@@ -251,6 +251,49 @@ Q5. How do you handle timeouts in a saga?
     The orchestrator (Temporal/Cadence) handles this natively with activity timeouts and retry policies. 
     For choreography, use a deadline event and a watchdog service.
 
+3* Outbox Pattern
+    The Outbox Pattern ensures that a database write and an event publication happen atomically — either both succeed or neither does. 
+    It solves the “dual-write problem” by writing the event to an outbox table in the same database transaction as the business data, then a separate process publishes those events to the message broker.
+
+    The Dual-Write Problem
+        When a service needs to update its database AND publish an event, naive approaches fail:
+            Scenario	                                        Problem
+            DB write succeeds, event publish fails	        Downstream services never learn about the change
+            Event publish succeeds, DB write fails	        Downstream services act on phantom data
+            Service crashes between the two operations	    Inconsistency depending on which completed
+        You cannot make two independent systems (DB + broker) transactional without a coordination pattern.
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
