@@ -1,0 +1,27 @@
+https://www.youtube.com/watch?v=G2B0YWuJUgI
+This guide outlines a professional approach to prompt engineering, based on the Prompting Playbook presentation, focusing on two core scenarios: maintaining production prompts and building new agentic systems.
+
+1. Establishing Rigorous Evaluations (Evals)
+    Before editing any prompt, you must build an eval suite to measure performance quantitatively (2:58). Without this, you are guessing whether your changes are improvements or regressions.
+    Control Cases: Include unambiguous queries the model should always answer correctly (4:19).
+    Edge Cases: Proactively include scenarios where previous models failed to ensure these bugs don't return (4:28).
+    Capability Limits: Explicitly test where the bot should refuse to answer or escalate to a human (4:45).
+
+2. Prompt Hygiene & Maintenance
+    When dealing with legacy prompts that have become cluttered over time, apply these hygiene principles (6:46):
+    Structure: Use XML tags to cleanly separate role definitions, policy documents, tone guidelines, and user data (9:47). If you can't distinguish the components of your prompt, the model likely can't either (11:15).
+    Redundancy Removal: Clean out outdated "patches" and copied website boilerplate (e.g., references to cookies or hero images) that add noise without value (8:43).
+    Output Contracts: Define the expected output format clearly at the end of the prompt (12:12). For complex formats like JSON, use your API harness to implement a stop sequence to prevent the model from generating unnecessary text (12:37).
+
+3. Debugging Failure Modes
+    Withheld Information: If a model refuses to answer a question it has data for, check for "defensive" instructions added for older models. As models evolve, these patches can lead to over-cautious behavior; update them to allow a more balanced response (16:46).
+    Capability Gaps: Instructions like "calculate correctly" do not replace the need for tools. If the model fails at math, provide a computational tool (e.g., a function for proration) rather than just giving better instructions (18:03).
+    Goal Trade-offs: When instructing a model on when to escalate, explain both the costs and the benefits. If you only mention the cost (e.g., $8 per human interaction), the model will overfit to avoid escalation, even when it's appropriate (21:09).
+
+4. Building Agentic Systems from Scratch
+    Rather than forcing a single, massive prompt to do everything, design a modular architecture (23:38):
+    The Generate-Evaluate-Repair Loop:
+      Generator: Create a first draft of the task (30:05).
+      Evaluator: An LLM-based prompt checks for violations and reports them (30:16).
+      Repairer: A final prompt receives the violation list and applies targeted fixes (30:35).
+      Benefit: This approach is often more token-efficient, lower in latency, and allows for inserting "soft constraints" (like scheduling preferences) at runtime without rewriting code (31:01).
