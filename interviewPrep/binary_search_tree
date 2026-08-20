@@ -1,0 +1,10 @@
+Binary Search Tree 
+  Its a special form of binary tree where 
+      1. value of each node must to greater than or equal to any values stored in its left subtree
+      2. value of each node must to less than or equal to any values stored in its right subtree
+
+  inorder traversal in BST will be in ascending order
+  
+  BST Search
+  
+    
