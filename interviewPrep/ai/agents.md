@@ -1,4 +1,6 @@
 # Build AI Agents from scratch
+
+### From Chatbots to Agentic Loops
   From a software engineering perspective, an agent is not an independent entity but a traditional software application that uses a language model for dynamic routing and decision‑making.
   Building reliable agents doesn’t need complex frameworks; it requires 
       solid engineering rigor, 
@@ -45,7 +47,7 @@ The Principle of Parsimony
   Autonomy should be reserved solely for tasks where the sequence of operations cannot be predicted before runtime.  
 
 
-### The Core Loop : Bare Metal Implementation
+##### The Core Loop : Bare Metal Implementation
   
   Mechanics of the Execution Loop
     Rather than delegating control flow to complex third-party abstractions, developers can implement agents using standard loops and conditional branching.
@@ -54,3 +56,11 @@ The Principle of Parsimony
     Reviewing the loop implementation highlights two architectural patterns:
         Decoupling Reasoning and Action: The language model only emits a string requesting an action. It has no mechanism to execute the database query itself. The actual database execution happens strictly within the application environment. This preserves control boundaries.
         State Accumulation: The outcomes of function executions must be appended to the conversation history message list before the next turn starts. This history is what provides the stateless model with short-term context memory.
+
+### Tools, Memory, and Reflection
+
+
+
+
+
+
