@@ -52,6 +52,7 @@ The data reveals two distinct, parallel shifts:
 *   **The Impact on Entry-Level Talent**: Research from **Stanford's Digital Economy Lab**, using ADP payroll data spanning millions of workers, found that employment for 22-to-25-year-olds in the most AI-exposed occupations — including software development — **declined roughly 13%** between late 2022 and mid-2025, even as employment for workers over 30 in the same roles grew. This is an early, critical signal that AI productivity gains are reshaping the traditional junior hiring pipeline. Organizations are prioritizing senior practitioners who can architect, audit, and secure AI systems over junior engineers generating raw lines of code.
 *   **The Association with Salary Premiums**: A comprehensive **Lightcast analysis of over 1.3 billion job postings** found that listings requesting AI-centric skills carried an average **28% salary premium**. This reflects the high market valuation of multi-disciplinary engineers who combine legacy system reliability with modern probabilistic expertise.
 
+
 ---
 
 ### Part 4: Evolving in Place — How 7 Industry Vectors Are Redefining Their Skills
@@ -87,7 +88,7 @@ Once your foundations are locked, you branch. Here is how your core legacy skill
 #### 2. Data Engineering ──> AI Data / Pipeline Specialist (AI Data Specialist)
 *   **The Focus**: Hydrating model context windows with fresh, highly relevant, and secure enterprise data in real time.
 *   **The Day-to-Day Change**: Moving away from scheduled, nightly batch-ETL pipelines designed for static dashboards. In the AI era, **stale data directly causes model hallucinations**. Data engineers must build continuous, low-latency streaming pipelines where the primary data consumer is a live model.
-*   **The Hard Market Evidence**: Data Engineers now earn **8–15% more than Data Scientists** at equivalent experience levels — a reversal from 2018–2020, when the premium ran the other way, reflecting how central real-time data infrastructure has become to production AI systems.
+*   **The Hard Market Evidence**: AI Data Engineers now earn **8–15% more than Data Scientists** at equivalent experience levels — a reversal from 2018–2020, when the premium ran the other way, reflecting how central real-time data infrastructure has become to production AI systems.
 *   **Specialized AI Skills to Master**: Real-time stream processing, specialized document extraction, vector database internals (understanding **HNSW vs. IVF-PQ** indexing trade-offs), semantic-preserving chunking, and automated retrieval evaluation.
 *   **Example Tools**: pgvector, Pinecone, Chroma, Milvus, Qdrant, Apache Kafka, and Apache Flink.
 
@@ -119,12 +120,12 @@ Once your foundations are locked, you branch. Here is how your core legacy skill
 #### 6. Data Analyst ──> Analytics Engineer
 *   **The Focus**: Designing governed, version-controlled, and highly documented semantic transformation layers to serve both human analysts and autonomous AI agents.
 *   **The Day-to-Day Change**: Shifting from writing manual, ad-hoc, and disconnected SQL queries to populate static PDF reports. Instead, you build unified, version-controlled semantic metric layers that Text-to-SQL engines and agents can query reliably without throwing calculation errors.
-*   **The Hard Market Evidence**: Analytics Engineers already out-earn Data Analysts by a wide margin — averaging **$105K–$170K** versus roughly **$84K** — reflecting how central the dbt-based semantic layer has become to how both humans and AI agents query company data.
+*   **The Hard Market Evidence**: Analytics Engineers already out-earn Data Analysts by a wide margin — averaging roughly **$84K** — reflecting how central the dbt-based semantic layer has become to how both humans and AI agents query company data.
 *   **Specialized AI Skills to Master**: Advanced dbt pipelines, dimensional data modeling (Kimball), automated data testing, and metric semantic layers designed for NL-to-SQL consumption (utilizing **dbt Semantic Layer/MetricFlow** and the new **dbt Semantic MCP Server**).
 *   **Example Tools**: dbt (Data Build Tool), Snowflake/BigQuery, and Cube.js.
 
 
-#### 7. Product Management ──> AI Product Manager
+#### 7. Product Management ──> AI Product Management
 *   **The Focus**: Mapping system trade-offs and ensuring algorithmic governance.
 *   **The Day-to-Day Change**: Defining the boundary of what constitutes a "successful" AI output. These roles now design the evaluation matrices, token-budget limits, and compliance frameworks to meet legal standards (such as the EU AI Act and NIST AI RMF).
 *   **Specialized AI Skills to Master**: Designing LLM-as-a-judge evaluation frameworks, benchmarking datasets, historical training data bias mitigation, algorithmic compliance, and risk profiling.
