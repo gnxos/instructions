@@ -5,8 +5,7 @@ In the early 2010s, "Cloud Engineer" was frequently listed as a highly specializ
 We are currently witnessing an identical horizontal integration with Artificial Intelligence. AI engineering is not merely a single specialized job title; it is a critical skill set expanding across every traditional software discipline.
 
 As Dr. Andrew Ng, co-founder of Google Brain and DeepLearning.AI, observed in August 2026:
-
-  "I talk about AI Engineering skills rather than the 'AI Engineer' role (someone whose job is to build AI systems), because the former is much broader. All developers today should know how to work with the cloud, and only a smaller number have a 'Cloud engineer' title. Similarly, all developers — full-stack engineers, data engineers, DevOps engineers, machine learning engineers, and, yes, AI engineers — will need AI engineering skills."
+> *"I talk about AI Engineering skills rather than the 'AI Engineer' role (someone whose job is to build AI systems), because the former is much broader. All developers today should know how to work with the cloud, and only a smaller number have a 'Cloud engineer' title. Similarly, all developers — full-stack engineers, data engineers, DevOps engineers, machine learning engineers, and, yes, AI engineers — will need AI engineering skills."*
 
 Rather than a massive, industry-wide replacement of human developers with "AI Engineers", this guide provides a disciplined, data-backed analysis of how the software industry is restructuring to build, run, and protect a new breed of software: **non-deterministic, probabilistic systems.**
 
