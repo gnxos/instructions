@@ -54,7 +54,7 @@ The data reveals two distinct, parallel shifts:
 
 ---
 
-### Part 4: Evolving in Place — How 6 Industry Vectors Are Redefining Their Skills
+### Part 4: Evolving in Place — How 7 Industry Vectors Are Redefining Their Skills
 
 The software industry is not collapsing; it is adapting. Here is how the day-to-day responsibilities, technologies, and concerns are separating across the core engineering disciplines:
 
@@ -72,7 +72,7 @@ Every engineering professional, regardless of their final specialization, must m
 
 ---
 
-#### B. Evolving in Place — The 6 Specialized Paths
+#### B. Evolving in Place — The 7 Specialized Paths
 
 Once your foundations are locked, you branch. Here is how your core legacy skills translate, what changes in your daily work, and what you must build to prove production competency:
 
