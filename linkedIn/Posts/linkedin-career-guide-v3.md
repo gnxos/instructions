@@ -1,10 +1,14 @@
 # The Great Re-Engineering: How the AI Era is Redefining Software Roles, Skills, and Standards
 
-All software developers today are expected to understand how to work with the cloud, yet only a small percentage hold the title of "Cloud Engineer." The cloud is not a job title; it is a horizontal infrastructure layer that everyone must navigate. 
+In the early 2010s, "Cloud Engineer" was frequently listed as a highly specialized, standalone job title. Over the next decade, a structural shift occurred: the core competencies of cloud computing such as, containerization, API integration, and serverless architectures became a horizontal requirement for all software developers. Today, a developer who cannot interact with cloud environments is severely limited in their career.
 
-The exact same shift is happening with artificial intelligence. 
+We are currently witnessing an identical horizontal integration with Artificial Intelligence. AI engineering is not merely a single specialized job title; it is a critical skill set expanding across every traditional software discipline.
 
-Rather than a massive, industry-wide replacement of human developers with "AI Engineers," **AI engineering is evolving as a horizontal skill set.** Full-stack developers, data engineers, DevOps specialists, and security analysts do not need to throw away their existing stacks. Instead, the entire software industry is learning to build, run, and protect a new breed of software: **non-deterministic, probabilistic systems.**
+As Dr. Andrew Ng, co-founder of Google Brain and DeepLearning.AI, observed in August 2026:
+
+"I talk about AI Engineering skills rather than the 'AI Engineer' role (someone whose job is to build AI systems), because the former is much broader. All developers today should know how to work with the cloud, and only a smaller number have a 'Cloud engineer' title. Similarly, all developers — full-stack engineers, data engineers, DevOps engineers, machine learning engineers, and, yes, AI engineers — will need AI engineering skills."
+
+Rather than a massive, industry-wide replacement of human developers with "AI Engineers". This guide provides a disciplined, data-backed analysis of how the software industry is restructuring to build, run, and protect a new breed of software: **non-deterministic, probabilistic systems.**
 
 ---
 
