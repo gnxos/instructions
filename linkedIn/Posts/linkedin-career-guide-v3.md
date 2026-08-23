@@ -54,7 +54,7 @@ The data reveals two distinct, parallel shifts:
 
 ---
 
-### Part 4: Evolving in Place — How 6 Industry Vectors are Redefining Their Skills
+### Part 4: Evolving in Place — How 7 Industry Vectors are Redefining Their Skills
 
 The software industry is not collapsing; it is adapting. Here is how the day-to-day responsibilities, technologies, and concerns are separating across the core engineering disciplines:
 
@@ -72,7 +72,7 @@ Every engineering professional, regardless of their final specialization, must m
 
 ---
 
-#### B. Evolving in Place — The 6 Specialized Paths
+#### B. Evolving in Place — The 7 Specialized Paths
 
 Once your foundations are locked, you branch. Here is how your core legacy skills translate, what changes in your daily work, and what you must build to prove production competency:
 
@@ -124,7 +124,7 @@ Once your foundations are locked, you branch. Here is how your core legacy skill
 *   **Example Tools**: dbt (Data Build Tool), Snowflake/BigQuery, and Cube.js.
 
 
-#### 7. Product Management ──> AI Solutions Architecture
+#### 7. Product Management ──> AI Product Management
 *   **The Focus**: Mapping system trade-offs and ensuring algorithmic governance.
 *   **The Day-to-Day Change**: Defining the boundary of what constitutes a "successful" AI output. These roles now design the evaluation matrices, token-budget limits, and compliance frameworks to meet legal standards (such as the EU AI Act and NIST AI RMF).
 *   **Specialized AI Skills to Master**: Designing LLM-as-a-judge evaluation frameworks, benchmarking datasets, historical training data bias mitigation, algorithmic compliance, and risk profiling.
