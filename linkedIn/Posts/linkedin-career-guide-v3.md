@@ -123,13 +123,6 @@ Once your foundations are locked, you branch. Here is how your core legacy skill
 *   **Specialized AI Skills to Master**: Advanced dbt pipelines, dimensional data modeling (Kimball), automated data testing, and metric semantic layers designed for NL-to-SQL consumption (utilizing **dbt Semantic Layer/MetricFlow** and the new **dbt Semantic MCP Server**).
 *   **Example Tools**: dbt (Data Build Tool), Snowflake/BigQuery, and Cube.js.
 
-#### 5. Product Management & Solutions Architecture: Cost, Compliance, and Evaluation
-*   **The Focus**: Mapping system trade-offs and ensuring algorithmic governance.
-*   **The Day-to-Day Change**: Defining the boundary of what constitutes a "successful" AI output. These roles now design the evaluation matrices, token-budget limits, and compliance frameworks to meet legal standards (such as the EU AI Act and NIST AI RMF).
-*   **Durable Skills & Tools**:
-    *   **Evaluation Systems**: Designing LLM-as-a-judge evaluation frameworks and benchmarking datasets.
-    *   **Governance & Ethics**: Historical training data bias mitigation, algorithmic compliance, and risk profiling.
-
 
 #### 7. Product Management ──> AI Solutions Architecture
 *   **The Focus**: Mapping system trade-offs and ensuring algorithmic governance.
