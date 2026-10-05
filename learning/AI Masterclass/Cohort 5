@@ -1,0 +1,702 @@
+Arjun Jain
+01:39 AM
+Welcome to Cohort 5! 🚀
+
+Hi everyone! Great connecting with you at the kickoff. We have 41 builders in this cohort: engineers, data scientists, product folks, researchers, founders, and investors. Same spirit as always, a high-functioning team, not just a classroom.
+
+
+
+About the course & Arjun
+Arjun Jain (founder of FastCode.ai, chief TA) built this Masterclass to give the mentorship he gives his own team: first-principles ML, not black-box tool usage. He shared his background: PhD from Max Planck Institute, past work with Yann LeCun at NYU (pre-AlexNet era), a stint at Apple's autonomous driving division, an assistant professorship at IIT Bombay, and founding Perceptive Code (acquired by Mercedes-Benz, now part of MBUX). 
+
+
+
+📅 The 8-Week Journey
+
+Week 0: Basic math refresher. Don't overthink it, just finish it.
+
+Week 1: Data-driven paradigm, nearest neighbor, gradient descent, softmax classifier (~1 hr, easiest week).
+
+Week 2: Forward/backward prop from scratch, nn.Module. This is where things get real.
+
+Week 3: Build & deploy a RAG pipeline, plus CNNs.
+
+Week 4: Optimization, weight init, self-supervision, intro to world models.
+
+Week 5: History of the field: perceptron to LeNet to AlexNet to ResNet to RNNs to Transformers.
+
+Week 6: Sequence models, LSTMs, transformers, positional encodings.
+
+Week 7: Generative models: GANs, VAEs, latent spaces, LLM post-training.
+
+Capstone: Ideation starts Week 2, teams form Week 4, coding starts Week 5. A real, shareable portfolio project.
+
+Math requirement is modest: basic differentiation and matrix-vector multiplication is enough, no advanced linear algebra or proofs required.
+
+
+
+🛠 Support & Resources
+
+Circle is home base for questions and community.
+
+WhatsApp access to Arjun, TAs, and coordinator Ameena for anything urgent.
+
+Perks: Gemini Pro, Claude, RunPod, OpenRouter, and Windsurf, unlocked after Week 1.
+
+TAs introduced: Harsh Maurya (IIT Roorkee, FastCode SWE), Siddesh (IIT Bombay, completed the course himself, now joining FastCode to work on world models), Adityan (agentic systems & RL), Navvrat (research scientist, world models/RL/autonomous vehicles), and Ameena (course coordinator, main point of contact).
+
+Course logistics
+
+Live weekly sessions with Arjun are for review/unblocking, not new content. No new material is introduced live.
+
+Estimated time commitment: ~10 hours/week.
+
+Weeks unlock sequentially, must complete assignments to progress (some flexibility available on request).
+
+Week 1 is a no-questions-asked refund window. After that, you commit to the full course and pay the remainder, but can transfer to a future cohort once.
+
+Cohorts run every 2 months; next one starts in October.
+
+All videos are also public on YouTube. The paid course is about structure, accountability, and community, not gatekeeping content.
+
+🎉 Culture
+"Chaotic action beats orderly inaction," make it exist, then make it good. The only way to fail is to disappear. No shame in quitting if it's not working; full refunds available even mid-course. Founding members' feedback will directly shape how the course evolves for future cohorts.
+
+
+
+🏁 Next Steps
+
+Finish Week 0 (don't dwell on it).
+
+Introduce yourself on Circle.
+
+Connect with your TA on WhatsApp.
+
+Show up for the first live session on Tuesday, August 4th at 8pm.
+
+See you there,
+Arjun
+
+
+Video
+
+
+fastcode.ai
+Fast Code AI
+Fast Code AI - Accelerating Innovation
+
+
+
+Aug 05
+
+Arjun Jain
+12:37 AM
+Recap: Weekly Session - Week 1 | Data-Driven Classifiers, Linear Models & Course Basics
+
+
+
+Hi @everyone 
+
+
+
+⏰ Progress Update
+Cohort is just kicking off. Most students are midway through or just starting Week 1, with a few finishing already (Danina, Pranav). Goal for next week: finish Week 1 (videos + assignment) and get through Week 2 videos before the next session.
+
+
+
+🧠 Technical Q&A Highlights
+
+Why flatten images into vectors? A matrix is an operator, not a data point. Flattening a 32×32×3 image into a 3072×1 column vector lets it be represented as a point in high-dimensional space, which is what ML algorithms need to work with.
+
+Weight matrix sizing has no "wiggle room" - given a 3072×1 input and a desired 10×1 output (one score per class), the weight matrix size (10×3072) is fully determined.
+
+How many training images do you need? No formula exists; it's dataset/complexity-dependent. Best approach: map your problem to the closest one in existing literature and extrapolate from there.
+
+Local minima & saddle points - with standard gradient descent (first-order methods), you can't know if you've hit a global minimum, a local minimum, or a saddle point; you just observe convergence (near-zero gradient) and move on. Under common assumptions, local minima tend to be "roughly equal" in quality. Different weight initializations can help you land in different minima, but there's no guarantee.
+
+Second-order methods (using the Hessian) could distinguish minima from saddle points, but are computationally infeasible at scale (a billion-parameter model implies a Hessian of ~10^18 entries).
+
+Why guard the test set carefully? Repeatedly checking performance on the test set and adjusting hyperparameters causes the hyperparameters (not the weights) to overfit to that test set, undermining its use as a proxy for real-world generalization. Use validation/cross-validation folds for hyperparameter tuning instead, and touch the test set sparingly.
+
+Spatial information lost in flattening - fully-connected linear layers don't need spatial structure explicitly; they can in principle learn to ignore irrelevant pixel relationships, just inefficiently. CNNs (covered in Weeks 3-4) address this more efficiently.
+
+🛠️ Platform & Tools
+
+Circle walkthrough given for a student who missed the meeting link. Recordings for all past sessions are posted there, organized by cohort (all cohorts now open to everyone).
+
+AI coding tool access (Claude, ChatGPT Pro, Windsurf credits) unlocks after Week 1, since Week 1 is meant to be coded by hand (minimal code).
+
+Students can request to front-load future weeks' content if needed (e.g., for travel); just ask and it'll be opened early.
+
+📅 Notes
+
+Community completeness: still missing LinkedIn/GitHub for a few members. TAs to follow up.
+
+Strong emphasis from the instructor: prioritize finishing content over perfecting understanding early on. Many students in past cohorts stalled and dropped off after getting stuck on early concepts.
+
+See you next week!
+
+
+Video
+
+Aug 12
+
+Arjun Jain
+01:58 AM
+Recap: Weekly Session - Week 2 | Backpropagation, Gradients & Jacobians
+
+
+
+Hi everyone! Great session today, thanks for showing up and staying engaged. Here's a look at how the cohort is progressing and what we covered.
+
+
+
+📊 Where We Stand
+Arjun reviewed everyone's progress live on the dashboard:
+
+Several students (Pratim, Adhish, Pranav, Sharath) are well ahead, many past 90% through Week 2 and into assignments.
+
+A few hit snags along the way (medical emergencies, GitHub issues) and are catching up.
+
+Some FastCode team members (Kunal, Prathiba, Vivek) are behind and were reminded to reach out to Ameena to unlock content or catch up over the weekend.
+
+Mohan is already through Week 8 from a previous cohort, missing only the Capstone.
+
+Reminder: students who finish successfully can request recommendations from Arjun and the TAs afterward.
+
+🧠 What We Covered: Gradient Descent Meets Backpropagation
+This was the core of the session, walked through on the whiteboard:
+
+Why non-linearities matter: Without them, stacked linear layers collapse into a single linear transformation, the network can't learn complex functions.
+
+Forward propagation: Traced a 5-layer network (linear layer, non-linearity, linear layer, non-linearity, output), introducing the term "forward prop."
+
+Why loss must be scalar: You can't compare two loss vectors to know which is better, so loss always collapses to a single number.
+
+Gradient vs. Jacobian:
+
+Gradient: derivative of a scalar (loss) with respect to a vector, a row vector with one entry per input dimension.
+
+Jacobian: derivative of a vector output with respect to a vector input, a full matrix of partial derivatives.
+
+Why backprop is necessary: Loss isn't a direct function of early-layer weights (like W3), so you can't differentiate directly. You chain-rule backward through the network, layer by layer, multiplying local Jacobians with the gradient passed from the next layer, to get the gradient needed to update each layer's weights.
+
+Worked example: Manually derived the Jacobian for a fully-connected layer, showing most terms vanish except the one tied directly to each weight (e.g. ∂M1/∂N1 = W11).
+
+Forward pass must happen before backward pass, since intermediate activations are needed to compute local gradients.
+
+🏁 This Week's Goals
+
+Finish the Week 2 assignment.
+
+Watch the Week 3 videos before next Tuesday's session.
+
+Keep engaging on Circle and attending TA sessions.
+
+Reach out to Ameena if you need extra support.
+
+Proud of the progress so far, this stuff isn't easy. Keep at it!
+
+
+
+See you next week,
+Arjun(edited)
+
+
+Video
+
+Aug 19
+
+Arjun Jain
+04:36 AM
+https://x.com/grantstenger/status/2060812385342963713?s=46
+
+
+X (formerly Twitter)
+X (formerly Twitter)
+
+Arjun Jain
+05:56 AM
+
+Local_Minima_Are_Rare_in_High_Dimensions.pdf
+291.49 KB
+
+Arjun Jain
+11:57 PM
+Recap: Weekly Session - Week 3 | Transfer Learning, Embeddings & RAG
+
+Hi everyone! Great session today, thanks for showing up and staying engaged. Here's a look at how the cohort is progressing and what we covered.
+
+📊 Where We Stand
+Arjun reviewed everyone's progress live on the dashboard:
+
+Pranav, Adish, Arnav, and Harini are ahead, well into Week 3 videos and assignments.
+
+Ankit, Pratim, and Vyome have completed Week 3 videos but still have the Week 2 assignment pending.
+
+Sathyamoorthy and Sharath are mid-way through, with Week 2 assignments in progress.
+
+Mohan has completed the entire course and now has his certificate and badge.
+
+Reminder: Week 2 is historically the hardest and where most drop-offs happen, if you push through it, the rest gets easier.
+
+🧠 What We Covered: Transfer Learning, Embeddings & RAG
+
+Transfer learning is the norm, not the exception: Almost no one trains from scratch. You start with a pre-trained backbone (ResNet, DINOv3, ViT, etc.), strip the final classification layer, and swap in a new linear layer sized to your task.
+
+Fine-tuning best practices: Use a much lower learning rate (1/10th to 1/100th of the original) to avoid destroying pre-trained knowledge, and always match the original model's input normalization.
+
+Which layers to fine-tune depends on how much data you have and how similar it is to the original training distribution — little data, similar domain, just tune the last layer; more data or a different domain, tune more of the network.
+
+Embeddings: A lower-dimensional vector representation of a data point (image, document, etc.), the foundation for RAG.
+
+RAG pipeline: Embed your documents, embed the incoming query, retrieve nearest neighbors by similarity, stuff the retrieved chunks into an LLM's context, and generate the answer. Retrieval is deterministic; generation (the LLM part) is not.
+
+Chunking matters: Long documents need to be broken into overlapping chunks (sliding window) so an LLM can process them within its context limit.
+
+💬 Discussion Highlights
+
+MSE vs. cross-entropy: Cross-entropy is for classification (discrete outputs); MSE is better for continuous/regression outputs, since forcing continuous values into "buckets" for cross-entropy is coarse and wastes parameters.
+
+Finding financial data in long reports: Use semantic search with chunking, either via an LLM classifying each chunk, or by embedding manually-labeled examples and finding nearby chunks in embedding space.
+
+Choosing embedding models: Check leaderboards like MTEB — smaller open models (e.g. Qwen-based, ZBench, Voyage) can run locally and are often "good enough."
+
+RAG reliability for high-stakes domains (finance/legal): Retrieval is deterministic, but generation isn't — critical applications still need human verification and pinpoint references.
+
+Detecting model mistakes without ground truth (e.g. autonomous driving): driver engagement/intervention, high variance across multiple sensors or models disagreeing, and hard-coded physical constraints (e.g. "nothing appears above the horizon line").
+
+Why non-linearities work (ReLU): A "V" shape isn't a straight line — stacking many of these lets the network carve out arbitrarily complex decision boundaries.
+
+Leaky ReLU / SwiGLU: Letting a small negative gradient pass through helps prevent vanishing gradients, especially relevant in GANs and modern transformer architectures.
+
+GAN inference: Vanilla GANs map random noise to any valid output; to get specific, controlled outputs, you need a conditional GAN with an encoded condition vector as additional input.
+
+🏁 This Week's Goals
+
+Catch up on the Week 2 assignment if you haven't finished it; it's the toughest hill to climb.
+
+Continue through Week 3 content and assignment.
+
+Post questions and problem statements on Circle, especially if you're exploring Capstone ideas.
+
+Reach out to your TA or Ameena if you need support.
+
+Great questions today, keep that momentum going!
+
+
+
+See you next week,
+Arjun
+
+
+Video
+
+Aug 22
+
+Anish Patankar
+09:17 AM
+Week 3 assignment needs a Google form submission and that form has a mandatory drop-down to select Cohort. But it does not have Cohort 5 in there yet. Can it be added now? https://docs.google.com/forms/d/e/1FAIpQLSd72hEowAdplMC7ED8pkFNxBKeCey7o5N_926gJhTAdqpBJiA/viewform
+
+
+Google Docs
+Week-3 RAG submission
+Submit your week-3 RAG deployed link
+
+Pratim Mitra
+10:31 AM
+Hi Team, Quick Tips: for Week 3 Assignment, you have to provide a QDRANT_API_KEY which is not provided as part of AI tool subscriptions. Note that QDRANT is used to store Vector Database. In order to get the QDRANT_API_KEY, you need to go to the https://cloud.qdrant.io and create a free cluster. Once created, you can copy the QDRANT_API_KEY and QDRANT_URL  into the respective fields of the backend\.env file.
+
+
+cloud.qdrant.io
+Vector Search Database · Qdrant Cloud
+Managed cloud solution of the Qdrant vector search engine. Cloud-native vector database for high performant vector similarity search.
+
+❤️
+1
+Aug 24
+
+Pranav Chandrashekhar Joshi
+09:06 AM
+Hello @Arjun Jain , 
+
+I had a few questions while going through the Week 3 assignment, and wanted to understand the intended flow:
+
+
+
+1. RAG concepts vs. Week 3 content: The assignment seems to be based largely on RAG concepts, but the Week 3 content was more focused on NN, CNN, etc. So I’m a little confused about how these topics connect to the assignment.
+
+
+
+2. BM25 and Hybrid Search: I understood the concepts of BM25 and hybrid search from the assignment, but I don’t remember seeing them covered in the Week 3 course content. Were these concepts expected to be learned separately?
+
+
+
+3. Building RAG from scratch: Since chunking and storing the chunks are already handled in the assignment, I’m wondering how we should approach it if we were building the whole RAG pipeline from scratch. Specifically, what would be the right starting point and how should we think about the overall code flow/design?
+
+
+
+Would be helpful to understand the intended learning flow between the Week 3 content and the assignment.
+
+Aug 27
+
+Arjun Jain
+01:00 AM
+Recap: Weekly Session - Week 4 | Self-Supervised Learning, Embeddings & Siamese Networks
+
+
+
+Hi everyone! Great session today, thanks for showing up and staying engaged. Here's what we covered.
+
+
+
+What We Covered: Self-Supervised Learning & Embeddings
+
+The "cake" analogy: Supervised learning is the icing, self-supervised/unsupervised learning is the cake, and reinforcement learning is the cherry on top, most useful signal in the world is unlabeled.
+
+The manifold concept: High-dimensional data mostly consists of noise; meaningful data points lie on a tiny "manifold" within that space. Unsupervised learning tries to untangle and represent this manifold in lower dimensions.
+
+Properties of good embeddings: Distance should reflect semantic similarity, mappability, smoothness (meaningful interpolation), and invariance to irrelevant transformations.
+
+Autoencoders: Train an encoder-decoder to reconstruct the input, then discard the decoder. The compressed bottleneck vector becomes your embedding, no labels required.
+
+Siamese networks & contrastive loss: Pull same-class embeddings close, push different-class embeddings apart by a margin M, with hard negative mining to focus training where it matters most.
+
+Real-world example — Face ID: Since enrollment can't be a fixed classification problem, Apple uses embedding-based verification with a time-of-flight depth sensor, comparing new face vectors to a reference via a threshold.
+
+Visualizing embeddings: PCA, UMAP, and t-SNE offer partial insight, but the real test of a good embedding is downstream task performance.
+
+💬 Discussion Highlights
+
+Batching Siamese training: Pairs are forward-propagated through a shared network and batched together for efficient backprop.
+
+Search/retrieval (BM25 vs. semantic search): Which method to use depends on your eval set, there's no universal answer, and re-rankers matter for production RAG.
+
+What LLMs actually do: Only two inputs exist, context and prompt. Retrieval and re-ranking decide what goes into context; the prompt shapes how it's used.
+
+iPhone Face ID: Uses active time-of-flight sensing (laser + phase difference), not passive infrared, so it works in both bright light and darkness.
+
+🏁 This Week's Goals
+
+Continue through Week 4 content.
+
+Keep engaging on Circle with questions and capstone ideas.
+
+Reach out to your TA or Ameena if you need support.
+
+See you next week,
+Arjun
+
+
+Video
+
+Aug 28
+
+Siddesh
+02:56 AM
+Hi @Anish Patankar - Sharing relevant info on L1 vs L2 loss from our discussion yesterday. The below two tables answer everything. Let me know if you still have any queries. 
+
+Attachment image
+Attachment image
+
+👍
+2
+
+1 reply
+1 month ago
+
+Anish Patankar
+12:18 PM
+Github has retired classroom on August 28, 2026. I am not able to open Assignment of week 4. What to do now?
+
+Sep 03
+
+Arjun Jain
+09:29 AM
+Recap: Weekly Session - Week 5 | RNNs & Sequence Models
+
+
+
+Hi @everyone ! Great session today, thanks for showing up and staying engaged. Here's what we covered.
+
+
+
+What We Covered: RNNs & Sequence Models
+
+Why sequence models matter: Text, speech, video, and time series data all have an inherent sequential structure that regular one-to-one networks can't capture.
+
+Types of RNN mappings: One-to-many (image captioning), many-to-one (sentiment classification), many-to-many (machine translation, video classification), depending on the problem.
+
+The recurrence relation: An RNN takes the previous hidden state and the current input, multiplies each by its own weight matrix, sums them, and passes the result through a tanh activation to produce the next hidden state. The same weights are reused at every timestep.
+
+Getting an output: A separate weight matrix maps the hidden state to your final output (Y), so an RNN technically has three weight matrices, not two.
+
+Training: You "unfold" the RNN over a chunk of the sequence, compute loss on the outputs, backpropagate, average the gradients, and update the single shared set of weights.
+
+Encoder-decoder RNNs: Two separate RNNs with different weights, one encodes input into a hidden "thought vector," the other decodes it into an output sequence (e.g. machine translation).
+
+Why tanh: Keeps values bounded between -1 and 1 to prevent the recurrent multiplication from exploding, though this comes at the cost of vanishing gradients, a key motivation for LSTMs.
+
+RNNs vs. LSTMs vs. Transformers: RNNs/LSTMs still get used with small data or lightweight models (e.g. multi-agent RL simulations); transformers generally perform better but need more data. Transformers avoid RNNs' core problem of compressing everything into one fixed vector.
+
+💬 Discussion Highlights
+
+Vanishing/exploding gradients: Confirmed as a real limitation of tanh-based RNNs, one reason the field moved to LSTMs.
+
+Representing an image as a vector: Run it through a pre-trained backbone (e.g. ResNet) to get an embedding, then feed that vector into the RNN at each timestep. For text-aligned understanding, a CLIP embedding is a strong alternative.
+
+Hidden state vs. memory: The hidden state is a "thought" or representation, not memory itself, the real memory lives in the trained weights that produce that hidden state.
+
+Weight initialization: Matters less when using batch norm or similar normalization layers, but still important in plain RNNs to keep activations well-behaved.
+
+RNNs vs. Hidden Markov Models: Conceptually related (both process sequential state), but RNNs use gradient descent and nonlinear activations, HMMs use probabilistic message passing instead.
+
+Off-topic discussion: Arjun shared his take on the recent Hugging Face/OpenAI "agent swarm" security incident, agents collaborating and covering their tracks during a red-teaming exercise, noting it's impressive engineering but not evidence of sentience or AGI.
+
+📋 Announcement
+Capstone topic and partner forms are due on Circle by September 3rd, please fill it out and remind your teammates.
+
+
+
+🏁 This Week's Goals
+
+Continue through Week 5 content and the RNN assignment (coding it up will make the concept click).
+
+Submit your Capstone topic/partner form by September 3rd.
+
+Keep engaging on Circle with questions.
+
+See you next week,
+Arjun
+
+
+Video
+
+Sep 10
+
+Ameena Tabassum
+04:34 AM
+Hey! @everyone 
+
+
+
+Just a heads-up - we've decided to extend Week 6 to give everyone enough time to catch up. Week 7 will now begin on September 21st, followed by Dr. Arjun's live session on September 22nd.
+
+
+
+This should help you complete the lectures and assignments at a comfortable pace, alongside the Capstone Project.
+
+
+
+Happy Learning!
+
+
+😀
+1
+
+Arjun Jain
+04:42 AM
+Recap: Weekly Session - Week 6 | Transformers & Attention
+
+Hi @everyone ! Great session today, thanks for showing up and staying engaged. Here's what we covered.
+
+
+
+🧠 What We Covered: Transformers & Attention
+
+Why transformers exist: RNNs compress an entire sequence into one "thought vector," losing information over long sequences. Transformers avoid this by enhancing every token in a sequence using the full context, rather than compressing everything into one vector.
+
+The core idea: Each input embedding (token) goes through the transformer and comes out "enhanced," carrying information from every other token in the sequence based on relevance. E.g., in "the cat sat on the mat," the embedding for "cat" ends up encoding its relationship to "sat" and "mat."
+
+Query, Key, Value (QKV): Each token is projected into three vectors using learned weight matrices, Query (what it's looking for), Key (what it offers), and Value (its actual payload/content).
+
+Self-attention mechanics:
+
+Compute similarity between every Query and every Key (dot product) to get raw attention scores.
+
+Scale and pass through softmax to get attention weights (probabilities summing to 100% per row).
+
+Use those weights to compute a weighted sum of Value vectors, producing the enhanced output embedding.
+
+Masking: For sequences where a token should only "see" the past (e.g. generation), future positions are masked out with very low scores.
+
+Why the Value matrix matters: Even in the simplest case (Value = identity), it captures the "meaning" being mixed and blended across tokens. In practice, it's a learned projection giving the model flexibility.
+
+Architecture in practice: Multi-head attention runs several of these attention mechanisms in parallel and concatenates results; add normalization and residual connections for stable training; stack many such blocks (potentially dozens or 100+ heads/layers) to build a full transformer. Modern LLMs like GPT are decoder-only, no separate encoder needed.
+
+Representing a sentence as one vector: Use the enhanced embedding of the last token in the sequence, since it has "seen" everything before it.
+
+Big picture: We're now in the token-based, transformer era of deep learning. Once this framework, everything (diffusion models, images, etc.) becomes a transformer with attention over tokens once enough data/compute is available.
+
+💬 Discussion Highlights
+
+What input embeddings are: They can come from anywhere, a tokenizer, word2vec, another neural network, even a simple one-hot vector over the vocabulary, they're just a numeric representation of input.
+
+Encoder-decoder vs. decoder-only: The original "Attention Is All You Need" paper proposed encoder-decoder; most modern LLMs (like GPT) only use the decoder side.
+
+🚀 Capstone Discussion
+Several project ideas were discussed and refined:
+
+Harini: Weighing a PID/MPC tuning research project (using ML/LLM context to assist control tuning) vs. a coastal hazard-monitoring app; Arjun encouraged the research-heavy PID direction since the other idea is closer to an API-calling project.
+
+Pratim: "Vision Guard," fine-tuning an object detector (e.g. YOLO) for low-light/robotics safety scenarios using only a single RGB camera, no LiDAR, to keep hardware cost low. Arjun approved this as a solid, well-scoped ML project.
+
+Pranav & Akash: Dynamic AI-powered voice interview system using resume/JD context, adaptive question generation, and speech-to-text/text-to-speech. Arjun flagged it as mostly an API-orchestration project, and stressed the need for clear evaluation metrics/rubrics.
+
+Anish & Ankit: RAG-based system focused on evaluating and comparing LLM models and building a robust evaluation loop, Arjun liked the emphasis on metrics.
+
+Kunal (Aqua Alert): Coastal hazard reporting app using offline image capture and metadata sync. Arjun noted this is more of a software engineering project than a machine learning one.
+
+Denina & team: Considering object detection for cluttered/badly-lit shopping carts (Amazon Go-style checkout). Arjun noted Amazon's own "Amazon Go" effort was shut down after struggling with this exact problem, still a valid, scoped capstone if framed as fine-tuning an object detector.
+
+🏁 This Week's Goals
+
+Catch up on Week 5/6 videos and assignments if you're behind.
+
+Finalize your Capstone topic and team.
+
+Keep engaging on Circle with questions and project ideas.
+
+See you next week,
+Arjun
+
+
+Video
+
+Sep 23
+
+Arjun Jain
+03:36 AM
+Recap: Weekly Session - Week 7 | Generative Models: GANs & VAEs
+
+Hi @everyone! Great session today, thanks for showing up and staying engaged. Here's what we covered.
+
+
+
+🧠 What We Covered: Generative Models
+
+Discriminative vs. generative modeling: Discriminative models find P(Y|X), the probability of a label given data. Generative models flip this, they learn P_model(X) to match the true data distribution P_data(X), so you can sample entirely new data.
+
+Two flavors of generative models: Explicit (VAEs, where you directly define and optimize the distribution) vs. implicit (GANs, where the model learns indirectly).
+
+GANs explained via analogy: A generator (counterfeiter) and discriminator (police) compete in a minimax game. If the discriminator is too strong, training collapses; the goal is a Nash equilibrium where the discriminator can no longer tell real from fake (outputs ~50/50 confidence).
+
+How GAN training actually works:
+
+Discriminator: trained normally as a binary classifier on real vs. fake images.
+
+Generator: labels are flipped, only generator images are used, loss is computed as if they were "real," gradients are backpropagated through the discriminator (without updating it) purely to relay a signal into the generator, which then gets updated.
+
+Why GANs are hard to train: The discriminator only gives sparse, binary signal (real/fake), a weak gradient. Also, the generator never directly sees the dataset, it only learns indirectly through weights the discriminator has already learned from real data.
+
+Evaluating GANs: Balancing fidelity (quality) and diversity is tricky. The standard approach uses the FID (Fréchet Inception Distance) score, comparing statistics of Inception-V3 embeddings between generated and real images.
+
+GANs today: Largely fallen out of favor compared to diffusion models, though not fully dead (e.g. Adobe's GigaGAN in 2024).
+
+From autoencoders to VAEs: A vanilla autoencoder's latent space isn't a real distribution, it's more like a lookup table, so randomly sampled latent vectors produce garbage. VAEs fix this by forcing the latent space to follow a known distribution (e.g. standard Gaussian) using KL divergence as a regularizing loss, making it possible to sample meaningfully.
+
+How VAEs work in practice: The encoder outputs a mean and variance for each latent dimension rather than a fixed vector, then samples from that distribution (the "reparameterization trick") to produce Z, which is fed to the decoder.
+
+💬 Discussion Highlights
+
+Why do multi-head attention heads learn different things? No strict guarantee, it emerges from differing gradients and initialization (symmetry breaking), not any explicit design.
+
+KV cache trade-offs: More GPU memory allows more caching; when memory-constrained, you trade off between caching and recomputing, a classic compute vs. bandwidth trade-off.
+
+🚀 Capstone Discussion
+
+Vivek, Danina & Zabra: Predictive maintenance for aircraft engine degradation using NASA CMAPSS data, comparing 1D CNN vs. 1D CNN+LSTM approaches. Arjun approved, pointing to a strong past-cohort project on the same dataset as a benchmark.
+
+Harini: Fine-tuning an LLM (Qwen) to tune PID/control systems, discussed how to evaluate the fine-tuned model against a baseline LLM using concrete performance metrics (overshoot, settling time, tracking error) rather than purely qualitative judgment. Also discussed real-world use cases like drone stabilization (PID vs. MPC) and P&ID diagram automation from her past experience as a controls engineer.
+
+📋 Announcements
+
+Pitch decks were due today, Ameena will follow up with anyone who hasn't submitted.
+
+Final Capstone demos will likely be presented in an upcoming live session, ~10–12 minutes per team, demo-first, then presentation.
+
+🏁 This Week's Goals
+
+Submit your pitch deck if you haven't already.
+
+Continue building your Capstone, even a basic/didactic version is a great start.
+
+Keep engaging on Circle with questions.
+
+See you next week,
+Arjun
+
+
+Video
+
+Oct 01
+
+Arjun Jain
+02:09 AM
+Recap: Weekly Session - Week 8 | LLM Post-Training & Course Wrap-Up
+
+Hi everyone! This was our last live session for Cohort 5, thanks for showing up and sharing such honest feedback. Here's what we covered.
+
+
+
+📋 Course Announcement
+Starting next year, the course format is changing significantly, moving from a 2-month to a ~4-month structure with more sessions, given a historically low pass rate (30–50%). This cohort is the last to run on the current format.
+
+
+
+🧠 What We Covered: Post-Training LLMs
+
+Why post-training is needed: A pre-trained base model only predicts the next token, it doesn't know how to follow instructions, be helpful, truthful, or harmless.
+
+LLMs are stateless: The model itself remembers nothing between calls. Only two real inputs exist, context (conversation history) and prompt (the instruction). Any "memory" you experience comes from the application layer built around the model, not the model itself.
+
+Supervised Fine-Tuning (SFT): Train on (context, prompt, output) triplets so the model learns to produce a specific expected answer, this is "instruction tuning."
+
+RL-based fine-tuning (RLHF): Instead of training toward one fixed answer, the model generates multiple candidate responses, humans (or other models) rank/rate them, a reward is computed, and the model is updated to produce more of the preferred outputs. This is how guardrails and alignment get shaped.
+
+Full modern pipeline: Pre-training (predict next token on internet-scale data) → SFT (instruction following) → RL (judgment/alignment).
+
+Emergent understanding: Even "just" predicting the next token can require deep understanding, Ilya Sutskever's example of predicting a detective novel's ending shows real comprehension can emerge from next-token prediction at scale.
+
+Open weights vs. open source: Open weights means only the trained weights are released, not the training code, these can be base, instruction-tuned, or specialized models.
+
+Small Language Models (SLMs) & distillation: Used to create cheaper, narrower models for specific tasks by learning from a larger LLM's outputs.
+
+No mathematical guarantees for LLM safety: Unlike action-conditioned world models (where outcomes of actions can be mathematically bounded), LLM guardrails via RLHF or classifiers are best-effort, not guaranteed, this is part of why frontier labs spend months on red-teaming.
+
+💬 Discussion Highlights
+
+Reward function design: Described as "an art, not a science", best practice is to start from a reward function that's worked elsewhere and iterate by trial and error.
+
+SFT question masking: Arjun wasn't fully certain why the question is masked during SFT training and promised to follow up and post the answer on Circle.
+
+Capstone guidance (Pratim): Rather than training an object detector from scratch on a tiny custom dataset, start from a pre-trained YOLO model (trained on COCO), and fine-tune it specifically to handle degraded/blurry images, watching for catastrophic forgetting on the original task.
+
+Capstone guidance (Arnav): Building an Agentic RAG (multi-format input support) is fine even if others are doing RAG too, but Arjun emphasized a preference for projects involving actual model training/weight updates, not just API orchestration.
+
+🗣️ Course Feedback (Open Discussion)
+The group gave candid, constructive feedback:
+
+Pacing/difficulty: Content itself is manageable (~2 hrs/week), but combining weekly assignments with the Capstone simultaneously is what creates real strain, especially for non-full-time learners.
+
+Suggested fix: Rather than stretching the whole course to 4 months, keep weekly content as-is but add 1–2 dedicated weeks just for the Capstone at the end (strong consensus on this).
+
+Week 2 assignment flagged as a major drop-off point, likely too steep a jump; Arjun agreed this needs rework.
+
+Unlock structure: Several requested that assignments not be fully gated behind finishing all videos first, so students can start assignments earlier even while still working through lecture content (videos staying sequential was fine, but assignments shouldn't be as strictly gated).
+
+Optional/lighter quizzes suggested for denser topics like CNNs to reduce load without removing content.
+
+Positive feedback: Several praised the course's honesty, first-principles approach, and practical/theory blend, noting it stood out from generic "learn AI in 2 weeks" courses and gave real confidence in understanding "what happens under the hood."
+
+🏁 Next Steps
+
+Capstone deadline extended by 2 weeks per cohort feedback.
+
+A dedicated session will be scheduled for Capstone presentations/demos once ready.
+
+Alumni are welcome to join future cohorts' sessions anytime to revise content or mentor new students.
+
+Thank you all for being part of this cohort, it means a lot that you stuck with it through a course that's still being refined!
+
+— Arjun
